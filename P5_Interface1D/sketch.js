@@ -7,7 +7,7 @@
 */ /////////////////////////////////////
 
 
-let displaySize = 25;   // how many pixels are visible in the game
+let displaySize = 15;   // how many pixels are visible in the game
 let pixelSize = 20;     // how big each 'pixel' looks on screen
 
 let playerOne;    // Adding 2 players to the game
@@ -32,7 +32,7 @@ function setup() {
 
   playerOne = new Player(color(255,0,0), parseInt(random(0,displaySize)), displaySize, color(252, 125, 125));   // Initializing players
   playerTwo = new Player(color(0,0,255), parseInt(random(0,displaySize)), displaySize, color(125, 125, 252));
-  
+
   controller = new Controller();            // Initializing controller
 
 }

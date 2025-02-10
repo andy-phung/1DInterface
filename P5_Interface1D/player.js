@@ -5,8 +5,8 @@
 
 class Player {
   
-    constructor(_color, _position, _displaySize, _trueColor) {
-        this.playerTrueColor = _trueColor
+    constructor(_color, _position, _displaySize, _paintColor) {
+        this.playerPaintColor = _paintColor
         this.playerColor = _color;
         this.position = _position;
         this.score = 0;
