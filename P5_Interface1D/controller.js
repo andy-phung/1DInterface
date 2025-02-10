@@ -23,80 +23,33 @@ class Controller {
 
                 // clear screen at frame rate so we always start fresh      
                 display.clear();
+
+                // set all painted pixels
+                for (const [location, value] of Object.entries(playerOne.painted_locations)) {
+                    display.setPixel(location, playerOne.playerTrueColor);
+                }
+                for (const [location, value] of Object.entries(playerTwo.painted_locations)) {
+                    display.setPixel(location, playerTwo.playerTrueColor);
+                }
             
                 // show all players in the right place, by adding them to display buffer
-                display.setPixel(playerOne.position, playerOne.playerColor);
-                display.setPixel(playerTwo.position, playerTwo.playerColor);
-                
-
-                // now add the target
-                display.setPixel(target.position, target.playerColor);
-
-                
-                // check if player has caught target
-                if (playerOne.position == target.position)  {
-                    playerOne.score++;              // increment score
-                    this.gameState = "COLLISION";   // go to COLLISION state
+                if(keyIsDown(83)) {
+                    display.setPixel(playerOne.position, playerOne.playerTrueColor);
                 }
-                
-                // check if other player has caught target        
-                if (playerTwo.position == target.position)  {
-                    playerTwo.score++;              // increment their score
-                    this.gameState = "COLLISION";   // go to COLLISION state
+                else {
+                    display.setPixel(playerOne.position, playerOne.playerColor);
                 }
 
+                if(keyIsDown(DOWN_ARROW)) {
+                    display.setPixel(playerTwo.position, playerTwo.playerTrueColor);
+                }
+                else {
+                    display.setPixel(playerTwo.position, playerTwo.playerColor);
+                }
                 break;
-
-            // This state is used to play an animation, after a target has been caught by a player 
-            case "COLLISION":
-                
-                 // clear screen at frame rate so we always start fresh      
-                 display.clear();
-
-                // play explosion animation one frame at a time.
-                // first figure out what frame to show
-                let frameToShow = collisionAnimation.currentFrame();    // this grabs number of current frame and increments it 
-                
-                // then grab every pixel of frame and put it into the display buffer
-                for(let i = 0; i < collisionAnimation.pixels; i++) {
-                    display.setPixel(i,collisionAnimation.animation[frameToShow][i]);                    
-                }
-
-                //check if animation is done and we should move on to another state
-                if (frameToShow == collisionAnimation.animation.length-1)  {
-                    
-                    // We've hit score max, this player wins
-                    if (playerOne.score >= score.max) {
-                        score.winner = playerOne.playerColor;   // store winning color in score.winner
-                        this.gameState = "SCORE";               // go to state that displays score
-                    
-                    // We've hit score max, this player wins
-                    } else if (playerTwo.score >= score.max) {
-                        score.winner = playerTwo.playerColor;   // store winning color in score.winner
-                        this.gameState = "SCORE";               // go to state that displays score
-
-                    // We haven't hit the max score yet, keep playing    
-                    } else {
-                        target.position = parseInt(random(0,displaySize));  // move the target to a new random position
-                        this.gameState = "PLAY";    // back to play state
-                    }
-                } 
-
-                break;
-
-            // Game is over. Show winner and clean everything up so we can start a new game.
-            case "SCORE":       
-            
-                // reset everyone's score
-                playerOne.score = 0;
-                playerTwo.score = 0;
-
-                // put the target somewhere else, so we don't restart the game with player and target in the same place
-                target.position = parseInt(random(1,displaySize));
-
-                //light up w/ winner color by populating all pixels in buffer with their color
-                display.setAllPixels(score.winner);                    
-
+ 
+            case "END":       
+                display.setAllPixels(playerTwo.playerColor); 
                 break;
 
             // Not used, it's here just for code compliance
@@ -119,16 +72,48 @@ function keyPressed() {
     
     // And so on...
     if (key == 'D' || key == 'd') {
-    playerOne.move(1);
+        playerOne.move(1);
     }    
 
-    if (key == 'J' || key == 'j') {
-    playerTwo.move(-1);
+    if (key == 'S' || key == 's') {
+        // might change back to array + move toggle logic to controller.js
+        if(!(playerOne.position in playerOne.painted_locations)) {
+            // paint
+            playerOne.painted_locations[playerOne.position] = playerOne.position;
+            // paint over other player's color 
+            if(playerOne.position in playerTwo.painted_locations) {
+                delete playerTwo.painted_locations[playerOne.position];
+            }
+        }
+        else {
+            // unpaint
+            delete playerOne.painted_locations[playerOne.position];
+        }
+    }    
+
+    if (keyCode === LEFT_ARROW) {
+        playerTwo.move(-1);
     }
     
-    if (key == 'L' || key == 'l') {
-    playerTwo.move(1);
+    if (keyCode === RIGHT_ARROW) {
+        playerTwo.move(1);
     }
+
+    if (keyCode === DOWN_ARROW) {
+        // might change back to array + move toggle logic to controller.js
+        if(!(playerTwo.position in playerTwo.painted_locations)) {
+            // paint
+            playerTwo.painted_locations[playerTwo.position] = playerTwo.position;
+            // paint over other player's color 
+            if(playerTwo.position in playerOne.painted_locations) {
+                delete playerOne.painted_locations[playerTwo.position];
+            }
+        }
+        else {
+            // unpaint
+            delete playerTwo.painted_locations[playerTwo.position];
+        }
+    }    
     
     // When you press the letter R, the game resets back to the play state
     if (key == 'R' || key == 'r') {

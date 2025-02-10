@@ -23,7 +23,6 @@ class Display {
     setPixel(  _index,  _color) {
         this.displayBuffer[_index]  = _color;
     }
-  
 
     // Color all pixels in the buffer
     setAllPixels( _color) {

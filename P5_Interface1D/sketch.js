@@ -7,7 +7,7 @@
 */ /////////////////////////////////////
 
 
-let displaySize = 30;   // how many pixels are visible in the game
+let displaySize = 25;   // how many pixels are visible in the game
 let pixelSize = 20;     // how big each 'pixel' looks on screen
 
 let playerOne;    // Adding 2 players to the game
@@ -30,16 +30,10 @@ function setup() {
 
   display = new Display(displaySize, pixelSize);        //Initializing the display
 
-  playerOne = new Player(color(255,0,0), parseInt(random(0,displaySize)), displaySize);   // Initializing players
-  playerTwo = new Player(color(0,0,255), parseInt(random(0,displaySize)), displaySize);
-
-  target = new Player(color(255,255,0), parseInt(random(0,displaySize)), displaySize);    // Initializing target using the Player class 
-
-  collisionAnimation = new Animation();     // Initializing animation
-
+  playerOne = new Player(color(255,0,0), parseInt(random(0,displaySize)), displaySize, color(252, 125, 125));   // Initializing players
+  playerTwo = new Player(color(0,0,255), parseInt(random(0,displaySize)), displaySize, color(125, 125, 252));
+  
   controller = new Controller();            // Initializing controller
-
-  score = {max:3, winner:color(0,0,0)};     // score stores max number of points, and color 
 
 }
 
