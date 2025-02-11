@@ -9,8 +9,8 @@ class Controller {
         this.gameState = "BLANK";
 
         this.blank_time = 750;
-        this.mural_time = 1000;
-        this.play_time = 2000;
+        this.mural_time = 7000;
+        this.play_time = 15000;
 
         this.setTimings();
 
