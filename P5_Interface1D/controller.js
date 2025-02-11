@@ -10,7 +10,7 @@ class Controller {
 
         this.blank_time = 750;
         this.mural_time = 7000;
-        this.play_time = 15000;
+        this.play_time = 20000;
 
         this.setTimings();
 
