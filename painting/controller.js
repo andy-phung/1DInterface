@@ -9,8 +9,8 @@ class Controller {
         this.gameState = "BLANK";
 
         this.blank_time = 750;
-        this.mural_time = 7000;
-        this.play_time = 20000;
+        this.mural_time = 10000;
+        this.play_time = 25000;
 
         this.setTimings();
 
@@ -25,9 +25,23 @@ class Controller {
         };
 
         // generate mural
-        for (let i = 0; i < displaySize; i++) {
-            this.mural[i] = this.randomMapWeighted(random(0, 1));
+        let pixels = 0;
+        let random_number;
+
+        while (pixels < 7) {
+            this.mural = [];
+            pixels = 0;
+            // regen until we get 10 pixels
+            for (let i = 0; i < displaySize; i++) {
+                random_number = this.randomMapWeighted(random(0, 1));
+                if (random_number == 1 || random_number == 2) {
+                    pixels += 1;
+                }
+                this.mural[i] = random_number;
+                
+            }
         }
+        
     }
 
     randomMapWeighted(random_number) {
@@ -79,9 +93,22 @@ class Controller {
                 playerOne.position = parseInt(random(0,displaySize));
                 playerTwo.position = parseInt(random(0,displaySize));
 
-                this.mural = [];
-                for (let i = 0; i < displaySize; i++) {
-                    this.mural[i] = this.randomMapWeighted(random(0, 1));
+                // generate mural
+                let pixels = 0;
+                let random_number;
+
+                while (pixels < 7) {
+                    this.mural = [];
+                    pixels = 0;
+                    // regen until we get 10 pixels
+                    for (let i = 0; i < displaySize; i++) {
+                        random_number = this.randomMapWeighted(random(0, 1));
+                        if (random_number == 1 || random_number == 2) {
+                            pixels += 1;
+                        }
+                        this.mural[i] = random_number;
+                        
+                    }
                 }
 
                 break;
