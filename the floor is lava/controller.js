@@ -33,16 +33,16 @@ class Controller {
     }
 
     waveToTime(wave_count) {
-        if(wave_count < 1) {
+        if(wave_count < 2) {
             return 2500;
-        } else if (wave_count < 2) {
-            return 1750;
-        } else if (wave_count < 3) {
-            return 1250;
+        } else if (wave_count < 4) {
+            return 2000;
         } else if (wave_count < 5) {
-            return 1000;
+            return 1750;
+        } else if (wave_count < 6) {
+            return 1300;
         } else {
-            return 800;
+            return 1100;
         }
     }
 

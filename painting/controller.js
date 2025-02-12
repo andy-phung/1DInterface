@@ -9,8 +9,8 @@ class Controller {
         this.gameState = "BLANK";
 
         this.blank_time = 750;
-        this.mural_time = 10000;
-        this.play_time = 25000;
+        this.mural_time = 3000;
+        this.play_time = 7000;
 
         this.setTimings();
 
@@ -41,14 +41,32 @@ class Controller {
                 
             }
         }
+
+        this.mural = [];
+        // regen until we get 10 pixels
+        for (let i = 0; i < displaySize; i++) {
+            random_number = this.randomMapWeighted(random(0, 1));
+            this.mural[i] = random_number; 
+        }
+
+        for (let i = 0; i < 5; i++) {
+            this.mural[i] = 0; 
+        }
+
+        for (let i = displaySize-1; i > 9; i--) {
+            this.mural[i] = 0; 
+        }
+        
+
+
         
     }
 
     randomMapWeighted(random_number) {
-        if(random_number < 0.7) {
+        if(random_number < 0) {
             return 0;
         }
-        else if(random_number < 0.85) {
+        else if(random_number < 0.5) {
             return 1;
         }
         else {
@@ -90,8 +108,8 @@ class Controller {
                 playerOne.painted_locations = {};
                 playerTwo.painted_locations = {};
 
-                playerOne.position = parseInt(random(0,displaySize));
-                playerTwo.position = parseInt(random(0,displaySize));
+                playerOne.position = 2;
+                playerTwo.position = 12;
 
                 // generate mural
                 let pixels = 0;
@@ -109,6 +127,21 @@ class Controller {
                         this.mural[i] = random_number;
                         
                     }
+                }
+
+                this.mural = [];
+                // regen until we get 10 pixels
+                for (let i = 0; i < displaySize; i++) {
+                    random_number = this.randomMapWeighted(random(0, 1));
+                    this.mural[i] = random_number; 
+                }
+
+                for (let i = 0; i < 5; i++) {
+                    this.mural[i] = 0; 
+                }
+
+                for (let i = displaySize-1; i > 9; i--) {
+                    this.mural[i] = 0; 
                 }
 
                 break;
