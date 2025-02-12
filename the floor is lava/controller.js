@@ -12,10 +12,13 @@ class Controller {
 
         this.setTimings();
 
-        this.wave = [];
+        this.wave = Array(displaySize).fill(0);
         this.wave_in_progress = false;
         this.wave_count = -1; // help
         this.wave_visible = "no"; // "no", "flash", "yes"
+
+        this.prev_score = [];
+        this.new_score = [];
 
     }
 
@@ -30,12 +33,16 @@ class Controller {
     }
 
     waveToTime(wave_count) {
-        if(wave_count < 3) {
-            return 3000;
-        } else if (wave_count < 6) {
-            return 2000;
-        } else {
+        if(wave_count < 1) {
+            return 2500;
+        } else if (wave_count < 2) {
+            return 1750;
+        } else if (wave_count < 3) {
+            return 1250;
+        } else if (wave_count < 5) {
             return 1000;
+        } else {
+            return 800;
         }
     }
 
@@ -75,12 +82,53 @@ class Controller {
             this.wave_visible = "no";
             this.wave_in_progress = false;
             // collision logic goes here
-            //if
+            if(this.wave[playerOne.position] == 1 || this.wave[playerTwo.position] == 1) {
+                this.gameState = "SCORE"
+            }
+            //this.wave_count = 0;
+            // ^makes it less fun imo
 
 
         }, interval + hold)
 
         // set this.wave_in_progress to false at end of inside last function
+    }
+
+    setScoreTimeouts() {
+        let prevScore;
+        let newScore;
+        let end;
+
+        prevScore = setTimeout(() => {
+            display.clear();
+            for(let i = 0; i < this.prev_score.length; i++) {
+                if(this.prev_score[i] == 1) {
+                    display.setPixel(i, playerOne.playerColor);
+                } else if(this.prev_score[i] == 2) {
+                    display.setPixel(i, playerTwo.playerColor);
+                }
+            }
+        }, 250);
+
+        newScore = setTimeout(() => {
+            display.clear();
+            for(let i = 0; i < this.new_score.length; i++) {
+                if(this.new_score[i] == 1) {
+                    display.setPixel(i, playerOne.playerColor);
+                } else if(this.new_score[i] == 2) {
+                    display.setPixel(i, playerTwo.playerColor);
+                }
+            }
+        }, 250+500);
+
+        end = setTimeout(() => {
+            if(playerOne.score > 4 || playerTwo.score > 4) {
+                this.gameState = "END";
+            } else {
+                this.gameState = "PLAY";
+            }
+            
+        }, 250+500+1500);
     }
     
     // This is called from draw() in sketch.js with every frame
@@ -92,12 +140,15 @@ class Controller {
         switch(this.gameState) {
 
             case "BLANK":
-                // clear screen and all player data
+                // clear screen
                 display.clear();
 
                 playerOne.position = parseInt(random(0,displaySize));
                 playerTwo.position = parseInt(random(0,displaySize));
 
+                break;
+
+            case "BLANK2":
                 break;
 
 
@@ -112,19 +163,20 @@ class Controller {
 
                 if(!this.wave_in_progress) {
                     // generate wave
-                    this.wave = [];
+                    this.wave = Array(displaySize).fill(0);
                     let pixels = 0;
                     let random_number;
 
-                    while (pixels < 7) {
-                        this.wave = [];
-                        pixels = 0;
-                        // regen until we get at least 7 pixels
+                    while (pixels < Math.round(0.75 * displaySize)) { // 3/4 of the screen
+                        // regen until we get at least that many lava pixels
                         for (let i = 0; i < displaySize; i++) {
-                            random_number = Math.round(Math.random());
+                            random_number = Math.round(Math.random());      
                             if(random_number == 1) {
-                                this.wave[i] = random_number;
                                 pixels += 1;
+                                this.wave[i] = random_number;
+                                if(pixels == Math.round(0.75 * displaySize)) {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -154,17 +206,59 @@ class Controller {
 
                 }
 
-                display.setPixel(playerOne.position, playerOne.playerColor);
-                display.setPixel(playerTwo.position, playerTwo.playerColor);
+                if(this.wave[playerOne.position] == 1 && this.wave_visible == "flash") {
+                    display.setPixel(playerOne.position, color(216,191,216));
+                } else {
+                    display.setPixel(playerOne.position, playerOne.playerColor);
+                }
+
+                if(this.wave[playerTwo.position] == 1 && this.wave_visible == "flash") {
+                    display.setPixel(playerTwo.position, color(125, 125, 252));
+                } else {
+                    display.setPixel(playerTwo.position, playerTwo.playerColor);
+                }
+                
+                
 
                 break;
  
             case "SCORE":     
                 display.clear();
 
-                let prev_score = [];
-                //for(let i = 0; i < playerOne.score)
+                this.prev_score = [];
+                for(let i = 0; i < playerOne.score; i++) {
+                    this.prev_score[i] = 1
+                }
+                for(let i = displaySize-1; i >= displaySize - playerTwo.score; i--) {
+                    this.prev_score[i] = 2
+                }
 
+                
+
+                if(this.wave[playerOne.position] == 1 && this.wave[playerTwo.position] == 0) {
+                    playerTwo.score += 1;
+                } else if(this.wave[playerOne.position] == 0 && this.wave[playerTwo.position] == 1) {
+                    playerOne.score += 1;
+                }
+
+                this.new_score = [];
+                for(let i = 0; i < playerOne.score; i++) {
+                    this.new_score[i] = 1
+                }
+                for(let i = displaySize-1; i >= displaySize - playerTwo.score; i--) {
+                    this.new_score[i] = 2
+                }
+
+                this.setScoreTimeouts();
+
+                this.gameState = "BLANK2";
+
+                // go to end if reached threshold score
+                
+
+                break;
+
+            case "END":
                 break;
 
             // Not used, it's here just for code compliance
