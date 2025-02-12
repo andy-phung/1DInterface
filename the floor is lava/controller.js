@@ -122,7 +122,7 @@ class Controller {
         }, 250+500);
 
         end = setTimeout(() => {
-            if(playerOne.score > 4 || playerTwo.score > 4) {
+            if(playerOne.score > 6 || playerTwo.score > 6) {
                 this.gameState = "END";
             } else {
                 this.gameState = "PLAY";
