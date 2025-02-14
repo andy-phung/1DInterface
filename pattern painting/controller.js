@@ -16,9 +16,19 @@ class Controller {
                 'playerTwoPaint': color(152, 159, 235),
                 'playerOnePosition': 14,
                 'playerTwoPosition': 17,
-                'board': [[0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]
+                'pattern': [[0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]],
+                'pattern_complete': [[0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [1, 0]]
             },
-            2: 2
+            2: {
+                'playerOneColor': color(105, 113, 199),
+                'playerTwoColor': color(246, 118, 104),
+                'playerOnePaint': color(152, 159, 235),
+                'playerTwoPaint': color(255, 200, 194),
+                'playerOnePosition': 15,
+                'playerTwoPosition': 18,
+                'pattern': [[1, 0], [1, 0], [0, 0], [1, 1], [0, 1], [0, 0], [1, 0], [1, 0], [1, 1], [0, 0], [0, 1], [0, 1], [1, 0]],
+                'pattern_complete': [[1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1]]
+            },
         }
         
     }
@@ -45,6 +55,10 @@ class Controller {
         // This is where your game logic lives
         /////////////////////////////////////////////////////////////////
         switch(this.gameState) {
+
+            case "BLANK": 
+                break;
+
             case "START": 
                 // reset player data and update for next round
                 playerOne.painted_locations = {};
@@ -67,7 +81,23 @@ class Controller {
                 display.clear();
 
                 // show pattern
-                
+                let pattern_pixel = [];
+                for(let i = 0; i < this.round_data[this.round]['pattern'].length; i++) {
+                    pattern_pixel = [];
+                    if(this.round_data[this.round]['pattern'][i][0] > 0) {
+                        for(let j = 0; j < this.round_data[this.round]['pattern'][i][0]; j++) {
+                            pattern_pixel.push(playerOne.paintColor);
+                        }
+                    }
+
+                    if(this.round_data[this.round]['pattern'][i][1] > 0) {
+                        for(let j = 0; j < this.round_data[this.round]['pattern'][i][1]; j++) {
+                            pattern_pixel.push(playerTwo.paintColor);
+                        }
+                    }
+
+                    display.setPixel(i, this.mix(pattern_pixel));
+                }
 
                 // show all painted pixels
                 for (let i = 0; i < displaySize; i++) {
@@ -80,25 +110,60 @@ class Controller {
                     }
                 }
 
+
+                // check if pattern is complete
+
+                // need to also add where player painted between pattern
+                let canvas = structuredClone(this.round_data[this.round]['pattern']);
+                let pixel = [];
+
+                for(let i = this.round_data[this.round]['pattern'].length; i < displaySize; i++) {
+                    pixel = [0, 0];
+                    if(i in playerOne.painted_locations) {
+                        pixel[0] = 1
+                    }
+                    if(i in playerTwo.painted_locations) {
+                        pixel[1] = 1
+                    }
+                    canvas.push(structuredClone(pixel));
+                }
+
+                if(JSON.stringify(canvas) === JSON.stringify(this.round_data[this.round]['pattern_complete'])) {
+                    this.gameState = "SUCCESS";
+                    
+                }
+
                 // show players
-                if(keyIsDown(83)) {
+                if(keyIsDown(83) && (typeof this.round_data[this.round]['pattern'][playerOne.position] === 'undefined' || JSON.stringify(this.round_data[this.round]['pattern'][playerOne.position]) === JSON.stringify([0, 0]))) {
                     display.setPixel(playerOne.position, playerOne.paintColor);
                 }
                 else {
                     display.setPixel(playerOne.position, playerOne.playerColor);
                 }
 
-                if(keyIsDown(DOWN_ARROW)) {
+                if(keyIsDown(DOWN_ARROW) && (typeof this.round_data[this.round]['pattern'][playerTwo.position] === 'undefined' || JSON.stringify(this.round_data[this.round]['pattern'][playerTwo.position]) === JSON.stringify([0, 0]))) {
                     display.setPixel(playerTwo.position, playerTwo.paintColor);
                 }
                 else {
                     display.setPixel(playerTwo.position, playerTwo.playerColor);
                 }
 
+                
+
                 break;
  
             case "SUCCESS":       
                 display.clear();
+
+                display.setAllPixels(color(0, 255, 0));
+                
+                let timeout = setTimeout(() => {
+                    this.round += 1;
+                    this.gameState = "START";
+
+                }, 500)
+
+                this.gameState = "BLANK";
 
                 // increment round, show success + progression animation
 
@@ -128,8 +193,8 @@ function keyPressed() {
     }    
 
     if (key == 'S' || key == 's') {
-        // might change back to array + move toggle logic to controller.js
-        if(!(playerOne.position in playerOne.painted_locations)) {
+        // so u cant paint on the pattern
+        if(!(playerOne.position in playerOne.painted_locations) && (typeof controller.round_data[controller.round]['pattern'][playerOne.position] === 'undefined' || JSON.stringify(controller.round_data[controller.round]['pattern'][playerOne.position]) === JSON.stringify([0, 0]))) {
             // paint
             playerOne.painted_locations[playerOne.position] = playerOne.position;
             // paint over other player's color 
@@ -153,7 +218,7 @@ function keyPressed() {
 
     if (keyCode === DOWN_ARROW) {
         // might change back to array + move toggle logic to controller.js
-        if(!(playerTwo.position in playerTwo.painted_locations)) {
+        if(!(playerTwo.position in playerTwo.painted_locations) && (typeof controller.round_data[controller.round]['pattern'][playerTwo.position] === 'undefined' || JSON.stringify(controller.round_data[controller.round]['pattern'][playerTwo.position]) === JSON.stringify([0, 0]))) {
             // paint
             playerTwo.painted_locations[playerTwo.position] = playerTwo.position;
             // paint over other player's color 
