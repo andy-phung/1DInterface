@@ -8,9 +8,9 @@ class Controller {
     constructor() {
         this.gameState = "BLANK";
 
-        this.blank_time = 750;
-        this.mural_time = 3000;
-        this.play_time = 7000;
+        this.blank_time = 100;
+        this.mural_time = 100;
+        this.play_time = 1000000;
 
         this.setTimings();
 
@@ -108,8 +108,8 @@ class Controller {
                 playerOne.painted_locations = {};
                 playerTwo.painted_locations = {};
 
-                playerOne.position = 2;
-                playerTwo.position = 12;
+                playerOne.position = 5;
+                playerTwo.position = 9;
 
                 // generate mural
                 let pixels = 0;
