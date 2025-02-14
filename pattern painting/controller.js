@@ -30,6 +30,26 @@ class Controller {
                 'pattern_complete': [[1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1]]
             },
         }
+
+        this.progress_animation = {
+            1: {
+                9: color(255, 216, 130),
+                10: color(255, 216, 130),
+                11: color(255, 216, 130)
+            },
+            2: {
+                7: color(255, 178, 130),
+                8: color(255, 178, 130),
+                12: color(255, 178, 130),
+                13: color(255, 178, 130)
+            },
+            3: {
+                5: color(255, 151, 130),
+                6: color(255, 151, 130),
+                14: color(255, 151, 130),
+                15: color(255, 151, 130)
+            }
+        }
         
     }
 
@@ -111,9 +131,7 @@ class Controller {
                 }
 
 
-                // check if pattern is complete
-
-                // need to also add where player painted between pattern
+                // check if pattern is complete     
                 let canvas = structuredClone(this.round_data[this.round]['pattern']);
                 let pixel = [];
 
@@ -126,6 +144,20 @@ class Controller {
                         pixel[1] = 1
                     }
                     canvas.push(structuredClone(pixel));
+                }
+
+                // adding where player painted between pattern
+                for(let i = 0; i < this.round_data[this.round]['pattern'].length; i++) {
+                    if(JSON.stringify(this.round_data[this.round]['pattern'][i]) === JSON.stringify([0, 0]) && (i in playerOne.painted_locations || i in playerTwo.painted_locations)) {
+                        pixel = [0, 0];
+                        if(i in playerOne.painted_locations) {
+                            pixel[0] = 1
+                        }
+                        if(i in playerTwo.painted_locations) {
+                            pixel[1] = 1
+                        }
+                        canvas[i] = structuredClone(pixel);
+                    }
                 }
 
                 if(JSON.stringify(canvas) === JSON.stringify(this.round_data[this.round]['pattern_complete'])) {
@@ -153,20 +185,41 @@ class Controller {
                 break;
  
             case "SUCCESS":       
+                // increment round, show success + progression animation
                 display.clear();
 
-                display.setAllPixels(color(0, 255, 0));
+                let prev_progress_time = 500; // can also be 0
+                let new_progress_time = 750;
+                let start_time = 1250;
                 
-                let timeout = setTimeout(() => {
+                let prevProgressTimeout = setTimeout(() => {
+                    // display prev progress
+                    for(let i = 1; i < this.round + 1; i++) {
+                        for(const key in this.progress_animation[i]) {
+                            display.setPixel(key, this.progress_animation[i][key])
+                        }
+                    }
+                }, prev_progress_time);
+
+                let progressTimeout = setTimeout(() => {
+                    display.clear(); // do we need this
                     this.round += 1;
+                    for(let i = 1; i < this.round + 1; i++) {
+                        for(const key in this.progress_animation[i]) {
+                            display.setPixel(key, this.progress_animation[i][key])
+                        }
+                    }
+                    // display new progress
+
+                }, prev_progress_time + new_progress_time);
+
+                let startTimeout = setTimeout(() => {
                     this.gameState = "START";
 
-                }, 500)
+                }, prev_progress_time + new_progress_time + start_time)
+                
 
                 this.gameState = "BLANK";
-
-                // increment round, show success + progression animation
-
                 break;
 
             // Not used, it's here just for code compliance
