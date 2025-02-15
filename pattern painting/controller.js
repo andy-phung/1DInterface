@@ -8,25 +8,27 @@ class Controller {
     constructor() {
         this.gameState = "START";
         this.round = 1;
+        playerOne.position = 14;
+        playerTwo.position = 17;
         this.round_data = {
-            1: {
+            2: {
                 'playerOneColor': color(248, 169, 2),
                 'playerTwoColor': color(105, 113, 199),
                 'playerOnePaint': color(255, 216, 130),
                 'playerTwoPaint': color(152, 159, 235),
-                'playerOnePosition': 14,
-                'playerTwoPosition': 17,
+                'playerOnePosition': -1,
+                'playerTwoPosition': -1,
                 'pattern': [[0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]],
                 'pattern_complete': [[0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [1, 0]]
             },
-            2: {
+            1: {
                 'playerOneColor': color(105, 113, 199),
                 'playerTwoColor': color(246, 118, 104),
                 'playerOnePaint': color(152, 159, 235),
                 'playerTwoPaint': color(255, 200, 194),
-                'playerOnePosition': 15,
-                'playerTwoPosition': 18,
-                'pattern': [[1, 0], [1, 0], [0, 0], [1, 1], [0, 1], [0, 0], [1, 0], [1, 0], [1, 1], [0, 0], [0, 1], [0, 1], [1, 0]],
+                'playerOnePosition': -1,
+                'playerTwoPosition': -1,
+                'pattern': [[1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0]],
                 'pattern_complete': [[1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1]]
             },
         }
@@ -85,8 +87,14 @@ class Controller {
                 playerTwo.painted_locations = {};
 
                 // set player + paint colors based on current round
-                playerOne.position = this.round_data[this.round]['playerOnePosition'];
-                playerTwo.position = this.round_data[this.round]['playerTwoPosition'];
+                if(this.round_data[this.round]['playerOnePosition'] > 0) {
+                    playerOne.position = this.round_data[this.round]['playerOnePosition'];
+                }
+                
+                if(this.round_data[this.round]['playerTwoPosition'] > 0) {
+                    playerTwo.position = this.round_data[this.round]['playerTwoPosition'];
+                }
+                
                 playerOne.playerColor = this.round_data[this.round]['playerOneColor'];
                 playerTwo.playerColor = this.round_data[this.round]['playerTwoColor'];
                 playerOne.paintColor = this.round_data[this.round]['playerOnePaint'];
@@ -99,6 +107,9 @@ class Controller {
             case "PLAY":
                 // clear screen at frame rate so we always start fresh      
                 display.clear();
+
+                display2.clear();
+
 
                 // show pattern
                 let pattern_pixel = [];
@@ -167,17 +178,21 @@ class Controller {
 
                 // show players
                 if(keyIsDown(83) && (typeof this.round_data[this.round]['pattern'][playerOne.position] === 'undefined' || JSON.stringify(this.round_data[this.round]['pattern'][playerOne.position]) === JSON.stringify([0, 0]))) {
-                    display.setPixel(playerOne.position, playerOne.paintColor);
+                    //display.setPixel(playerOne.position, playerOne.paintColor);
+                    display2.setPixel(playerOne.position, playerOne.playerColor);
                 }
                 else {
-                    display.setPixel(playerOne.position, playerOne.playerColor);
+                    //display.setPixel(playerOne.position, playerOne.playerColor);
+                    display2.setPixel(playerOne.position, playerOne.playerColor);
                 }
 
                 if(keyIsDown(DOWN_ARROW) && (typeof this.round_data[this.round]['pattern'][playerTwo.position] === 'undefined' || JSON.stringify(this.round_data[this.round]['pattern'][playerTwo.position]) === JSON.stringify([0, 0]))) {
-                    display.setPixel(playerTwo.position, playerTwo.paintColor);
+                    //display.setPixel(playerTwo.position, playerTwo.paintColor);
+                    display2.setPixel(playerTwo.position, playerTwo.playerColor);
                 }
                 else {
-                    display.setPixel(playerTwo.position, playerTwo.playerColor);
+                    //display.setPixel(playerTwo.position, playerTwo.playerColor);
+                    display2.setPixel(playerTwo.position, playerTwo.playerColor);
                 }
 
                 
