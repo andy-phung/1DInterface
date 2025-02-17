@@ -6,6 +6,17 @@ class Controller {
 
     // This is the state we start with.
     constructor() {
+        this.left_rotation = 0;
+        this.right_rotation = 0;
+        this.rotation_threshold = 5;
+
+        this.left_pressed_time = -1;
+        this.right_pressed_time = -1;
+        this.left_pressed_time2 = -1;
+        this.right_pressed_time2 = -1;
+        this.press_threshold = 500;
+        this.move_interval = 150;
+
         this.gameState = "START";
         this.round = 1;
         playerOne.position = 14;
@@ -195,6 +206,45 @@ class Controller {
                     display2.setPixel(playerTwo.position, playerTwo.playerColor);
                 }
 
+                // hold to keep moving
+
+
+                if(this.left_pressed_time == -1 && keyIsDown(65)) {
+                    this.left_pressed_time = performance.now();
+                } else if(performance.now() - this.left_pressed_time > this.press_threshold && keyIsDown(65)) {
+                    //console.log(parseInt(performance.now() - this.left_pressed_time) % this.move_interval);
+                    if(parseInt(performance.now() - this.left_pressed_time) % this.move_interval <= 10 || parseInt(performance.now() - this.left_pressed_time) % this.move_interval >= this.move_interval - 10) {
+                        playerOne.move(-1);
+                    }
+                }
+
+                if(this.right_pressed_time == -1 && keyIsDown(68)) {
+                    this.right_pressed_time = performance.now();
+                } else if(performance.now() - this.right_pressed_time > this.press_threshold && keyIsDown(68)) {
+                    //console.log(parseInt(performance.now() - this.left_pressed_time) % this.move_interval);
+                    if(parseInt(performance.now() - this.right_pressed_time) % this.move_interval <= 10 || parseInt(performance.now() - this.right_pressed_time) % this.move_interval >= this.move_interval - 10) {
+                        playerOne.move(1);
+                    }
+                }
+
+                if(this.left_pressed_time2 == -1 && keyIsDown(37)) {
+                    this.left_pressed_time2 = performance.now();
+                } else if(performance.now() - this.left_pressed_time2 > this.press_threshold && keyIsDown(37)) {
+                    //console.log(parseInt(performance.now() - this.left_pressed_time) % this.move_interval);
+                    if(parseInt(performance.now() - this.left_pressed_time2) % this.move_interval <= 10 || parseInt(performance.now() - this.left_pressed_time2) % this.move_interval >= this.move_interval - 10) {
+                        playerTwo.move(-1);
+                    }
+                }
+
+                if(this.right_pressed_time2 == -1 && keyIsDown(39)) {
+                    this.right_pressed_time2 = performance.now();
+                } else if(performance.now() - this.right_pressed_time2 > this.press_threshold && keyIsDown(39)) {
+                    //console.log(parseInt(performance.now() - this.left_pressed_time) % this.move_interval);
+                    if(parseInt(performance.now() - this.right_pressed_time2) % this.move_interval <= 10 || parseInt(performance.now() - this.right_pressed_time2) % this.move_interval >= this.move_interval - 10) {
+                        playerTwo.move(1);
+                    }
+                }
+
                 
 
                 break;
@@ -245,10 +295,48 @@ class Controller {
 }
 
 
+function keyReleased() {
+    if (key == 'A' || key == 'a') {
+        controller.left_pressed_time = -1;
 
+      }
+    
+    // And so on...
+    if (key == 'D' || key == 'd') {
+        controller.right_pressed_time = -1;
+    }    
+
+    if (keyCode === LEFT_ARROW) {
+        controller.left_pressed_time2 = -1;
+    }
+    
+    if (keyCode === RIGHT_ARROW) {
+        controller.right_pressed_time2 = -1;
+    }
+
+}
 
 // This function gets called when a key on the keyboard is pressed
 function keyPressed() {
+    // placeholders
+    // let left = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
+    // let right = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
+    
+    // if (left.includes(key)) {
+    //     controller.left_rotation += 1;
+    //     if(controller.left_rotation >= controller.rotation_threshold) {
+    //         playerOne.move(-1);
+    //         controller.left_rotation = 0;   
+    //     }
+    // }
+
+    // if (right.includes(key)) {
+    //     controller.right_rotation += 1;
+    //     if(controller.right_rotation >= controller.rotation_threshold) {
+    //         playerOne.move(1);
+    //         controller.right_rotation = 0;   
+    //     }
+    // }
 
     // Move player one to the left if letter A is pressed
     if (key == 'A' || key == 'a') {
