@@ -8,7 +8,10 @@ class Controller {
     constructor() {
         this.left_rotation = 0;
         this.right_rotation = 0;
-        this.rotation_threshold = 5;
+
+        //this.left_rotation2 = 0;
+        //this.right_rotation2 = 0;
+        this.rotation_threshold = 2;
 
         this.left_pressed_time = -1;
         this.right_pressed_time = -1;
@@ -316,27 +319,22 @@ function keyReleased() {
 
 }
 
-// This function gets called when a key on the keyboard is pressed
 function keyPressed() {
-    // placeholders
-    // let left = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
-    // let right = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
-    
-    // if (left.includes(key)) {
-    //     controller.left_rotation += 1;
-    //     if(controller.left_rotation >= controller.rotation_threshold) {
-    //         playerOne.move(-1);
-    //         controller.left_rotation = 0;   
-    //     }
-    // }
+    if (key == "H" || key == "h") {
+        controller.left_rotation += 1;
+        if(controller.left_rotation >= controller.rotation_threshold) {
+            playerOne.move(-1);
+            controller.left_rotation = 0;   
+        }
+    }
 
-    // if (right.includes(key)) {
-    //     controller.right_rotation += 1;
-    //     if(controller.right_rotation >= controller.rotation_threshold) {
-    //         playerOne.move(1);
-    //         controller.right_rotation = 0;   
-    //     }
-    // }
+    if (key == "J" || key == "j") {
+        controller.right_rotation += 1;
+        if(controller.right_rotation >= controller.rotation_threshold) {
+            playerOne.move(1);
+            controller.right_rotation = 0;   
+        }
+    }
 
     // Move player one to the left if letter A is pressed
     if (key == 'A' || key == 'a') {
