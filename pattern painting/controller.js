@@ -9,8 +9,8 @@ class Controller {
         this.left_rotation = 0;
         this.right_rotation = 0;
 
-        //this.left_rotation2 = 0;
-        //this.right_rotation2 = 0;
+        this.left_rotation2 = 0;
+        this.right_rotation2 = 0;
         this.rotation_threshold = 2;
 
         this.left_pressed_time = -1;
@@ -333,6 +333,22 @@ function keyPressed() {
         if(controller.right_rotation >= controller.rotation_threshold) {
             playerOne.move(1);
             controller.right_rotation = 0;   
+        }
+    }
+
+    if (key == "N" || key == "n") {
+        controller.left_rotation2 += 1;
+        if(controller.left_rotation2 >= controller.rotation_threshold) {
+            playerTwo.move(-1);
+            controller.left_rotation2 = 0;   
+        }
+    }
+
+    if (key == "M" || key == "m") {
+        controller.right_rotation2 += 1;
+        if(controller.right_rotation2 >= controller.rotation_threshold) {
+            playerTwo.move(1);
+            controller.right_rotation2 = 0;   
         }
     }
 
