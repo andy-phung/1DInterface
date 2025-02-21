@@ -309,11 +309,11 @@ function keyReleased() {
         controller.right_pressed_time = -1;
     }    
 
-    if (keyCode === LEFT_ARROW) {
+    if (key == 'I' || key == 'i') {
         controller.left_pressed_time2 = -1;
     }
     
-    if (keyCode === RIGHT_ARROW) {
+    if (key == 'P' || key == 'P') {
         controller.right_pressed_time2 = -1;
     }
 
@@ -378,15 +378,15 @@ function keyPressed() {
         }
     }    
 
-    if (keyCode === LEFT_ARROW) {
+    if (key == 'I' || key == 'i') {
         playerTwo.move(-1);
     }
     
-    if (keyCode === RIGHT_ARROW) {
+    if (key == 'P' || key == 'p') {
         playerTwo.move(1);
     }
 
-    if (keyCode === DOWN_ARROW) {
+    if (key == 'O' || key == 'o') {
         // might change back to array + move toggle logic to controller.js
         if(!(playerTwo.position in playerTwo.painted_locations) && (typeof controller.round_data[controller.round]['pattern'][playerTwo.position] === 'undefined' || JSON.stringify(controller.round_data[controller.round]['pattern'][playerTwo.position]) === JSON.stringify([0, 0]))) {
             // paint
