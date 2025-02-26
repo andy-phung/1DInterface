@@ -116,7 +116,7 @@ class Controller {
 
         console.log(deltaE);
 
-        return deltaE < 10;
+        return deltaE < 20;
     }
 
     // This is called from draw() in sketch.js with every frame
