@@ -215,7 +215,7 @@ function keyPressed() {
         }
     }
 
-    if(key == 'A' || key == 'a' || key == 'D' || key == 'd') {
+    if(key == 'D' || key == 'd') {
         if(playerOne.currentColorIndex < playerOne.colorCycle.length - 1) {
             playerOne.currentColorIndex += 1;
         } else {
@@ -223,13 +223,13 @@ function keyPressed() {
         }
     }
 
-    // if(key == 'A' || key == 'a') {
-    //     if(playerOne.currentColorIndex > 0) {
-    //         playerOne.currentColorIndex -= 1;
-    //     } else {
-    //         playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
-    //     }
-    // }
+    if(key == 'A' || key == 'a') {
+        if(playerOne.currentColorIndex > 0) {
+            playerOne.currentColorIndex -= 1;
+        } else {
+            playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
+        }
+    }
 
     if(key == 'R' || key == 'r') {
         // temp
