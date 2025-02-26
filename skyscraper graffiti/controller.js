@@ -9,12 +9,13 @@ class Controller {
         this.gameState = "PLAY";
         this.round = 1;
 
-        playerOne.position = displaySize - 1;
+        playerOne.position = displaySize - 2;
         playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
         playerOne.currentColorIndex = 0;
 
-        this.targetPixelPosition = playerOne.position - 4;
-        this.targetPixelColor = color(int(random(0, 256)), int(random(0, 256)), int(random(0, 256)));
+        this.targetPixelPosition = playerOne.position - 3;
+
+        this.targetPixelColor = this.generate_random_color();
         
         this.spraying = false;
         this.sprayPosition = -1;
@@ -22,6 +23,24 @@ class Controller {
         this.painted = false;
         this.paintColor = color(0, 0, 0);
 
+        this.paintedCorrect = [];
+
+    }
+
+    // generates only bright colors
+    generate_random_color() {
+        let red = int(random(0, 256));
+        let green = int(random(0, 256)); 
+        let blue = int(random(0, 256));
+
+        while(0.2126*red + 0.7152*green + 0.0722*blue < 175) {
+            red = int(random(0, 256));
+            green = int(random(0, 256)); 
+            blue = int(random(0, 256));
+        }
+
+        return color(red, green, blue);
+        
     }
 
     mix(colors) { // list of colors
@@ -39,16 +58,47 @@ class Controller {
         return color(red, green, blue);
     }
 
+    rgb_to_lab(r0, g0, b0) {
+        // i didnt write this
+
+        var r = r0 / 255.0;
+        var g = g0 / 255.0;
+        var b = b0 / 255.0;
+      
+        r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
+        g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
+        b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
+      
+        var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+        var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+        var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+      
+        x *= 100.0;
+        y *= 100.0;
+        z *= 100.0;
+      
+        x /= 95.047;
+        y /= 100.0;
+        z /= 108.883;
+      
+        x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (4 / 29);
+        y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (4 / 29);
+        z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (4 / 29);
+      
+        return [(116.0 * y) - 16.0, 500.0 * (x - y), 200.0 * (y - z)];
+      }
+
+    // need to use lab -> delta e
     close_enough(color1, color2) {
-        let yeah = false;
-        let threshold = 20;
-        for(let i = 0; i < 3; i++) {
-            if(Math.abs(color1['levels'][i] - color2['levels'][i]) < threshold) {
-                //console.log(`${i}, ${Math.abs(color1['levels'][i] - color2['levels'][i])}`);
-                yeah = true;
-            }
-        }
-        return yeah;
+        let deltaE;
+        let lab1 = this.rgb_to_lab(color1["levels"][0], color1["levels"][1], color1["levels"][2]);
+        let lab2 = this.rgb_to_lab(color2["levels"][0], color2["levels"][1], color2["levels"][2]);
+
+        deltaE = Math.sqrt((lab2[0] - lab1[0])**2 + (lab2[1] - lab1[1])**2 + (lab2[2] - lab1[2])**2)
+
+        console.log(deltaE);
+
+        return deltaE < 50;
     }
 
     // This is called from draw() in sketch.js with every frame
@@ -65,9 +115,10 @@ class Controller {
 
                 // draw player
                 display.setPixel(playerOne.position, playerOne.colorCycle[playerOne.currentColorIndex]);
-                // draw target pixels
+                // draw target pixel
                 display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColor);
 
+                // spray animation
                 if(this.spraying) {
                     this.sprayPosition -= 1;
                     if(this.sprayPosition == this.targetPixelPosition && this.painted == false) {
@@ -82,14 +133,38 @@ class Controller {
                     display.setPixel(this.sprayPosition, playerOne.colorCycle[playerOne.currentColorIndex]);
                 }
 
+                // color mixing on the target pixel
                 if(this.painted) {
                     display.setPixel(this.targetPixelPosition, this.paintColor);
 
                     if(this.close_enough(this.paintColor, this.targetPixelColor)) {
+                        display.clear();
+
                         this.painted = false;
-                        this.targetPixelColor = color(int(random(0, 256)), int(random(0, 256)), int(random(0, 256)));
+
+                        this.paintedCorrect.push([color(this.paintColor['levels'][0], this.paintColor['levels'][1], this.paintColor['levels'][2]), color(this.targetPixelColor['levels'][0], this.targetPixelColor['levels'][1], this.targetPixelColor['levels'][2])]);
+
+                        this.targetPixelColor = this.generate_random_color();
                         this.paintColor = color(0, 0, 0);
+
+                        this.sprayPosition = -1;
+
+                        playerOne.position -= 5;
+                        this.targetPixelPosition -= 5;
+
+                        if(playerOne.position < 0) {
+                            reset();
+                        }
+                        
+
                     }
+                }
+
+                //console.log(this.paintedCorrect);
+                // displaying target pixels that they painted correctly
+                for(let i = 0; i < this.paintedCorrect.length; i++) {
+                    display.setPixel(displaySize - (5*(i+1)), this.paintedCorrect[i][0]);
+                    display.setBorderedPixel(displaySize - (5*(i+1)), this.paintedCorrect[i][1]);
                 }
                 
                 break;
@@ -107,6 +182,23 @@ class Controller {
     }
 }
 
+function reset() {
+    playerOne.position = displaySize - 2;
+    playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
+    playerOne.currentColorIndex = 0;
+
+    controller.targetPixelPosition = playerOne.position - 3;
+    controller.targetPixelColor = controller.generate_random_color();
+    
+    controller.spraying = false;
+    controller.sprayPosition = -1;
+
+    controller.painted = false;
+    controller.paintColor = color(0, 0, 0);
+
+    controller.paintedCorrect = [];
+}
+
 
 function keyReleased() {
 
@@ -120,7 +212,7 @@ function keyPressed() {
         }
     }
 
-    if(key == 'W' || key == 'w') {
+    if(key == 'D' || key == 'd') {
         if(playerOne.currentColorIndex < playerOne.colorCycle.length - 1) {
             playerOne.currentColorIndex += 1;
         } else {
@@ -128,22 +220,18 @@ function keyPressed() {
         }
     }
 
+    if(key == 'A' || key == 'a') {
+        if(playerOne.currentColorIndex > 0) {
+            playerOne.currentColorIndex -= 1;
+        } else {
+            playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
+        }
+    }
+
     if(key == 'R' || key == 'r') {
         // temp
-        controller.gameState = "PLAY";
         controller.round = 1;
-
-        playerOne.position = displaySize - 1;
-        playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
-        playerOne.currentColorIndex = 0;
-
-        controller.targetPixelPosition = playerOne.position - 4;
-        controller.targetPixelColor = color(int(random(0, 256)), int(random(0, 256)), int(random(0, 256)));
+        reset();
         
-        controller.spraying = false;
-        controller.sprayPosition = -1;
-
-        controller.painted = false;
-        controller.paintColor = color(0, 0, 0);
     }
 }

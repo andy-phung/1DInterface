@@ -52,7 +52,7 @@ class Display {
         //noStroke();
         noFill();
         stroke(this.borderDisplayBuffer[i]);
-        strokeWeight(3);
+        strokeWeight(4);
         rect(0, i*this.pixelSize, this.pixelSize, this.pixelSize);
         noStroke();
       }
@@ -66,6 +66,8 @@ class Display {
 
         for(let i = 0; i < this.displaySize; i++) {    
         this.displayBuffer[i] = this.initColor; 
+        noStroke();
+        this.borderDisplayBuffer[i] = color(0, 0, 0, 0);
         }
     }
     
