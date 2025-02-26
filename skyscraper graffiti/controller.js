@@ -11,7 +11,7 @@ class Controller {
 
         playerOne.position = displaySize - 2;
         //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
-        playerOne.colorCycle = [color(0, 255, 255), color(255, 255, 0), color(255, 0, 255)];
+        playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
         playerOne.currentColorIndex = 0;
 
         this.targetPixelPosition = playerOne.position - 3;
@@ -31,16 +31,30 @@ class Controller {
     // generates only bright colors
     generate_random_color() {
 
-        
+        let random_list = [];
 
-        let red = int(random(0, 256));
-        let green = int(random(0, 256)); 
-        let blue = int(random(0, 256));
+        for (let i = 0; i < 3; i++) {
+            random_list.push(playerOne.colorCycle[int(random(0, playerOne.colorCycle.length))])
+        }
+
+        let randomColor = this.mix(random_list);
+
+        let red = randomColor['levels'][0];
+        let green = randomColor['levels'][1];
+        let blue = randomColor['levels'][2];
 
         while(0.2126*red + 0.7152*green + 0.0722*blue < 200) {
-            red = int(random(0, 256));
-            green = int(random(0, 256)); 
-            blue = int(random(0, 256));
+            random_list = [];
+            for (let i = 0; i < 3; i++) {
+                random_list.push(playerOne.colorCycle[int(random(0, playerOne.colorCycle.length))])
+            }
+
+            randomColor = this.mix(random_list);
+
+            red = randomColor['levels'][0];
+            green = randomColor['levels'][1];
+            blue = randomColor['levels'][2];
+
         }
 
         return color(red, green, blue);
@@ -102,7 +116,7 @@ class Controller {
 
         console.log(deltaE);
 
-        return deltaE < 40;
+        return deltaE < 10;
     }
 
     // This is called from draw() in sketch.js with every frame
@@ -190,7 +204,7 @@ function reset() {
     playerOne.position = displaySize - 2;
     //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
     //playerOne.colorCycle = [color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)];
-    playerOne.colorCycle = [color(0, 255, 255), color(255, 255, 0), color(255, 0, 255)];
+    playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
     playerOne.currentColorIndex = 0;
 
     controller.targetPixelPosition = playerOne.position - 3;
