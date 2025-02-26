@@ -10,7 +10,8 @@ class Controller {
         this.round = 1;
 
         playerOne.position = displaySize - 2;
-        playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
+        //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
+        playerOne.colorCycle = [color(0, 255, 255), color(255, 255, 0), color(255, 0, 255)];
         playerOne.currentColorIndex = 0;
 
         this.targetPixelPosition = playerOne.position - 3;
@@ -101,7 +102,7 @@ class Controller {
 
         console.log(deltaE);
 
-        return deltaE < 50;
+        return deltaE < 40;
     }
 
     // This is called from draw() in sketch.js with every frame
@@ -187,7 +188,9 @@ class Controller {
 
 function reset() {
     playerOne.position = displaySize - 2;
-    playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
+    //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
+    //playerOne.colorCycle = [color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)];
+    playerOne.colorCycle = [color(0, 255, 255), color(255, 255, 0), color(255, 0, 255)];
     playerOne.currentColorIndex = 0;
 
     controller.targetPixelPosition = playerOne.position - 3;
