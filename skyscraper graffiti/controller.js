@@ -39,6 +39,18 @@ class Controller {
         return color(red, green, blue);
     }
 
+    close_enough(color1, color2) {
+        let yeah = false;
+        let threshold = 20;
+        for(let i = 0; i < 3; i++) {
+            if(Math.abs(color1['levels'][i] - color2['levels'][i]) < threshold) {
+                //console.log(`${i}, ${Math.abs(color1['levels'][i] - color2['levels'][i])}`);
+                yeah = true;
+            }
+        }
+        return yeah;
+    }
+
     // This is called from draw() in sketch.js with every frame
     update() {
 
@@ -72,6 +84,12 @@ class Controller {
 
                 if(this.painted) {
                     display.setPixel(this.targetPixelPosition, this.paintColor);
+
+                    if(this.close_enough(this.paintColor, this.targetPixelColor)) {
+                        this.painted = false;
+                        this.targetPixelColor = color(int(random(0, 256)), int(random(0, 256)), int(random(0, 256)));
+                        this.paintColor = color(0, 0, 0);
+                    }
                 }
                 
                 break;
