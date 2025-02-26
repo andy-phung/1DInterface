@@ -43,7 +43,7 @@ class Controller {
         let green = randomColor['levels'][1];
         let blue = randomColor['levels'][2];
 
-        while(0.2126*red + 0.7152*green + 0.0722*blue < 200) {
+        while(0.2126*red + 0.7152*green + 0.0722*blue < 175) {
             random_list = [];
             for (let i = 0; i < 3; i++) {
                 random_list.push(playerOne.colorCycle[int(random(0, playerOne.colorCycle.length))])
