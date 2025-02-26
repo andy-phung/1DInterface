@@ -52,7 +52,7 @@ class Display {
         //noStroke();
         noFill();
         stroke(this.borderDisplayBuffer[i]);
-        strokeWeight(4);
+        strokeWeight(6);
         rect(0, i*this.pixelSize, this.pixelSize, this.pixelSize);
         noStroke();
       }

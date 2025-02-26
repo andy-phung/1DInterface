@@ -29,11 +29,14 @@ class Controller {
 
     // generates only bright colors
     generate_random_color() {
+
+        
+
         let red = int(random(0, 256));
         let green = int(random(0, 256)); 
         let blue = int(random(0, 256));
 
-        while(0.2126*red + 0.7152*green + 0.0722*blue < 175) {
+        while(0.2126*red + 0.7152*green + 0.0722*blue < 200) {
             red = int(random(0, 256));
             green = int(random(0, 256)); 
             blue = int(random(0, 256));
@@ -212,7 +215,7 @@ function keyPressed() {
         }
     }
 
-    if(key == 'D' || key == 'd') {
+    if(key == 'A' || key == 'a' || key == 'D' || key == 'd') {
         if(playerOne.currentColorIndex < playerOne.colorCycle.length - 1) {
             playerOne.currentColorIndex += 1;
         } else {
@@ -220,13 +223,13 @@ function keyPressed() {
         }
     }
 
-    if(key == 'A' || key == 'a') {
-        if(playerOne.currentColorIndex > 0) {
-            playerOne.currentColorIndex -= 1;
-        } else {
-            playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
-        }
-    }
+    // if(key == 'A' || key == 'a') {
+    //     if(playerOne.currentColorIndex > 0) {
+    //         playerOne.currentColorIndex -= 1;
+    //     } else {
+    //         playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
+    //     }
+    // }
 
     if(key == 'R' || key == 'r') {
         // temp
