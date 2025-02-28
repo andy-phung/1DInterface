@@ -38,7 +38,11 @@ function setup() {
 
   controller = new Controller();            // Initializing controller
 
+  frameRate(15);
+
 }
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function draw() {
 

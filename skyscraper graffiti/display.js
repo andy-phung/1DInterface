@@ -31,7 +31,7 @@ class Display {
 
     setBorderedPixel(  _index,  _color) {
         this.borderDisplayBuffer[_index]  = _color;
-        console.log(_color);
+        //console.log(_color);
         
   }
 

@@ -29,7 +29,13 @@ class Controller {
         this.painted = false;
         this.paintColor = color(0, 0, 0);
 
+        this.painted2 = false;
+        this.paintColor2 = color(0, 0, 0);
+
         this.paintedCorrect = [];
+
+        this.justMatched = false;
+        this.sprayTimeout = true;
 
     }
 
@@ -136,27 +142,64 @@ class Controller {
             case "PLAY": 
                 display.clear();
 
-                // draw floors
+                //console.log(`${this.painted}, ${this.painted2}`);
 
+                if(keyIsDown(83)) {
+                    if(!this.spraying && !this.justMatched && this.sprayTimeout) {
+                        this.spraying = true;
+                        this.sprayPosition = playerOne.position;
+                    }
+                    // need a delay after so players have control over how much is sprayed
+                    // + delay after successfully matched color
+                }
 
                 // draw player
                 display.setPixel(playerOne.position, playerOne.colorCycle[playerOne.currentColorIndex]);
                 // draw target pixel
                 display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColors[this.targetPixelIndex]);
+                display.setBorderedPixel(this.targetPixelPosition + 1, this.targetPixelColors[this.targetPixelIndex]);
 
                 // spray animation
                 if(this.spraying) {
                     this.sprayPosition -= 1;
+
+                    
                     if(this.sprayPosition == this.targetPixelPosition && this.painted == false) {
+                        // target pixel empty
                         this.painted = true;
                         this.paintColor = playerOne.colorCycle[playerOne.currentColorIndex];
                         this.spraying = false;
+                        this.sprayTimeout = false;
+                        setTimeout(() => {
+                            this.sprayTimeout = true;
+                        }, "250");
                     } else if(this.sprayPosition == this.targetPixelPosition && this.painted == true) {
+                        // target pixel not empty
                         this.paintColor = this.mix([this.paintColor, playerOne.colorCycle[playerOne.currentColorIndex]]);
                         this.spraying = false;
+                        this.sprayTimeout = false;
+                        setTimeout(() => {
+                            this.sprayTimeout = true;
+                        }, "250");
                     }
 
+                    // for the target pixel closer to the player
+                    if(this.sprayPosition == this.targetPixelPosition + 1 && this.painted2 == false) {
+                        // empty
+                        this.painted2 = true;
+                        this.paintColor2 = playerOne.colorCycle[playerOne.currentColorIndex];
+                    } else if(this.sprayPosition == this.targetPixelPosition + 1 && this.painted2 == true) {
+                        // not empty
+                        this.paintColor2 = this.mix([this.paintColor2, playerOne.colorCycle[playerOne.currentColorIndex]]);
+                    }
+
+
+
                     display.setPixel(this.sprayPosition, playerOne.colorCycle[playerOne.currentColorIndex]);
+                }
+
+                if(this.painted2) {
+                    display.setPixel(this.targetPixelPosition + 1, this.paintColor2);
                 }
 
                 // color mixing on the target pixel
@@ -166,7 +209,10 @@ class Controller {
                     if(this.close_enough(this.paintColor, this.targetPixelColors[this.targetPixelIndex])) {
                         display.clear();
 
+                        this.justMatched = true;
+
                         this.painted = false;
+                        this.painted2 = false;
 
                         this.paintedCorrect.push([color(this.paintColor['levels'][0], this.paintColor['levels'][1], this.paintColor['levels'][2]), color(this.targetPixelColors[this.targetPixelIndex]['levels'][0], this.targetPixelColors[this.targetPixelIndex]['levels'][1], this.targetPixelColors[this.targetPixelIndex]['levels'][2])]);
 
@@ -181,7 +227,7 @@ class Controller {
                         playerOne.position -= 3;
                         this.targetPixelPosition -= 3;
 
-                        if(playerOne.position < 0) {
+                        if(playerOne.position < 2) {
                             reset();
                         }
                         
@@ -196,6 +242,7 @@ class Controller {
                     //display.setBorderedPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
 
                     display.setPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
+                    display.setPixel(displaySize - (3*(i+1) + 2) + 1, this.paintedCorrect[i][1]);
                 }
                 
                 break;
@@ -235,7 +282,13 @@ function reset() {
     controller.painted = false;
     controller.paintColor = color(0, 0, 0);
 
+    controller.painted2 = false;
+    controller.paintColor2 = color(0, 0, 0);
+
     controller.paintedCorrect = [];
+
+    controller.justMatched = false;
+    controller.sprayTimeout = true;
 }
 
 
@@ -244,11 +297,15 @@ function keyReleased() {
 }
 
 function keyPressed() {
+    // if(key == 'S' || key == 's') {
+    //     if(!controller.spraying) {
+    //         controller.spraying = true;
+    //         controller.sprayPosition = playerOne.position;
+    //     }
+    // }
+
     if(key == 'S' || key == 's') {
-        if(!controller.spraying) {
-            controller.spraying = true;
-            controller.sprayPosition = playerOne.position;
-        }
+        controller.justMatched = false;
     }
 
     if(key == 'D' || key == 'd') {
@@ -275,11 +332,8 @@ function keyPressed() {
     }
 }
 
-// adjust spray speed, spacing between player and target
 
-// player right under the floor the target color is on? 
-// idk but i think visually separating the player and target color would help
-
+// to add:
 // erase button
-
 // player climbing animation, cleaner climbing animation
+// floor colors that continue from the last round
