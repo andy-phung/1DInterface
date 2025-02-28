@@ -5,13 +5,16 @@
 
 class Display {
 
-    constructor(_displaySize, _pixelSize, _second) {
+    constructor(_displaySize, _pixelSize, _canvasWidth) {
   
       this.displaySize = _displaySize;
       this.pixelSize = _pixelSize;
       this.initColor = color(0, 0, 0);      // black color
       this.displayBuffer = [];
       this.borderDisplayBuffer = [];
+      this.offset = _canvasWidth/2 - this.pixelSize/2;
+      this.filled;
+      this.floorColors = [];
 
       // Assign black to all pixels. Black = off
       for(let i = 0; i < this.displaySize; i++){
@@ -28,34 +31,72 @@ class Display {
 
     setBorderedPixel(  _index,  _color) {
         this.borderDisplayBuffer[_index]  = _color;
+        console.log(_color);
+        
   }
 
     // Color all pixels in the buffer
     setAllPixels( _color) {
-      
       for(let i = 0; i < displaySize; i++) { 
         display.setPixel(i, _color); 
       }
     }
 
+    setFloorColors(_floorColors) {
+      this.floorColors = _floorColors;
+    }
 
-    // Now write it to screen
-    // This is the only function in the entire software that writes something directly to the screen. I recommend you keep it this way.
+    is_black(color) {
+      return color['levels'][0] == 0 && color['levels'][1] == 0 && color['levels'][2] == 0;
+    }
+
     show() {
-      for (let i =0; i< this.displaySize; i++) {
+      // sky, wip
+      fill(10, 175, 255);
+      rect(0, 0, this.pixelSize*2, this.displaySize*this.pixelSize);
+      rect(this.offset + this.pixelSize*4, 0, this.pixelSize*2, this.displaySize*this.pixelSize);
+
+      // building, wip
+      fill(140, 140, 140);
+      for (let i = 0; i < 10; i++) {
+        rect(this.offset - this.pixelSize*3, this.pixelSize + this.pixelSize*3*i, this.pixelSize*7, this.pixelSize)
+      }
+
+      // building floor colors, wip
+      for(let i = 0; i < this.floorColors.length; i++) {
+        fill(this.floorColors[i]);
+        rect(this.offset - this.pixelSize*3, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
+        rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
+      }
+
+      // sky pt 2
+      // fill(10, 175, 255);
+
+      // for(let i = 0; i < this.floorColors.length + 1; i++) {
+      //   rect(this.offset - this.pixelSize*3, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize, this.pixelSize*2);
+      //   rect(this.offset + this.pixelSize*3, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize, this.pixelSize*2);
+      // }
+
+
+      for (let i = 0; i< this.displaySize; i++) {
         //noStroke();
-        fill(this.displayBuffer[i]);
-        rect(0, i*this.pixelSize, this.pixelSize, this.pixelSize);
+        if(!this.is_black(this.displayBuffer[i])) {
+          fill(this.displayBuffer[i]);
+          rect(0+this.offset, i*this.pixelSize, this.pixelSize, this.pixelSize);
+        }
+        
       }
 
       for (let i =0; i< this.displaySize; i++) {
         //noStroke();
         noFill();
         stroke(this.borderDisplayBuffer[i]);
-        strokeWeight(6);
-        rect(0, i*this.pixelSize, this.pixelSize, this.pixelSize);
+        strokeWeight(3);
+        rect(0+this.offset, i*this.pixelSize, this.pixelSize, this.pixelSize);
         noStroke();
       }
+
+      
 
     }
 

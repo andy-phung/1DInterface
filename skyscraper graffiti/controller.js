@@ -9,14 +9,19 @@ class Controller {
         this.gameState = "PLAY";
         this.round = 1;
 
-        playerOne.position = displaySize - 2;
+        playerOne.position = displaySize - 3;
         //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
         playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
         playerOne.currentColorIndex = 0;
 
-        this.targetPixelPosition = playerOne.position - 3;
+        this.targetPixelPosition = playerOne.position - 2;
+        this.targetPixelColors = [];
+        for(let i = 0; i < 8; i++) {
+            this.targetPixelColors.push(this.generate_random_color())
+        }
+        this.targetPixelIndex = this.targetPixelColors.length - 1;
 
-        this.targetPixelColor = this.generate_random_color();
+        display.setFloorColors(this.targetPixelColors);
         
         this.spraying = false;
         this.sprayPosition = -1;
@@ -34,7 +39,7 @@ class Controller {
         let random_list = [];
 
         for (let i = 0; i < 3; i++) {
-            random_list.push(playerOne.colorCycle[int(random(0, playerOne.colorCycle.length))])
+            random_list.push(playerOne.colorCycle[int(random(0, playerOne.colorCycle.length))]);
         }
 
         let randomColor = this.mix(random_list);
@@ -131,10 +136,13 @@ class Controller {
             case "PLAY": 
                 display.clear();
 
+                // draw floors
+
+
                 // draw player
                 display.setPixel(playerOne.position, playerOne.colorCycle[playerOne.currentColorIndex]);
                 // draw target pixel
-                display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColor);
+                display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColors[this.targetPixelIndex]);
 
                 // spray animation
                 if(this.spraying) {
@@ -155,20 +163,23 @@ class Controller {
                 if(this.painted) {
                     display.setPixel(this.targetPixelPosition, this.paintColor);
 
-                    if(this.close_enough(this.paintColor, this.targetPixelColor)) {
+                    if(this.close_enough(this.paintColor, this.targetPixelColors[this.targetPixelIndex])) {
                         display.clear();
 
                         this.painted = false;
 
-                        this.paintedCorrect.push([color(this.paintColor['levels'][0], this.paintColor['levels'][1], this.paintColor['levels'][2]), color(this.targetPixelColor['levels'][0], this.targetPixelColor['levels'][1], this.targetPixelColor['levels'][2])]);
+                        this.paintedCorrect.push([color(this.paintColor['levels'][0], this.paintColor['levels'][1], this.paintColor['levels'][2]), color(this.targetPixelColors[this.targetPixelIndex]['levels'][0], this.targetPixelColors[this.targetPixelIndex]['levels'][1], this.targetPixelColors[this.targetPixelIndex]['levels'][2])]);
 
-                        this.targetPixelColor = this.generate_random_color();
+                        if(this.targetPixelIndex >= 0) {
+                            this.targetPixelIndex -= 1;
+                        }
+                        
                         this.paintColor = color(0, 0, 0);
 
                         this.sprayPosition = -1;
 
-                        playerOne.position -= 5;
-                        this.targetPixelPosition -= 5;
+                        playerOne.position -= 3;
+                        this.targetPixelPosition -= 3;
 
                         if(playerOne.position < 0) {
                             reset();
@@ -181,8 +192,10 @@ class Controller {
                 //console.log(this.paintedCorrect);
                 // displaying target pixels that they painted correctly
                 for(let i = 0; i < this.paintedCorrect.length; i++) {
-                    display.setPixel(displaySize - (5*(i+1)), this.paintedCorrect[i][0]);
-                    display.setBorderedPixel(displaySize - (5*(i+1)), this.paintedCorrect[i][1]);
+                    //display.setPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][0]);
+                    //display.setBorderedPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
+
+                    display.setPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
                 }
                 
                 break;
@@ -201,14 +214,20 @@ class Controller {
 }
 
 function reset() {
-    playerOne.position = displaySize - 2;
+    playerOne.position = displaySize - 3;
     //playerOne.colorCycle = [color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 255, 255), color(0, 0, 255), color(255, 0, 255)];
     //playerOne.colorCycle = [color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)];
     playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
     playerOne.currentColorIndex = 0;
 
-    controller.targetPixelPosition = playerOne.position - 3;
-    controller.targetPixelColor = controller.generate_random_color();
+    controller.targetPixelPosition = playerOne.position - 2;
+    controller.targetPixelColors = [];
+    for(let i = 0; i < 8; i++) {
+        controller.targetPixelColors.push(controller.generate_random_color())
+    }
+    controller.targetPixelIndex = controller.targetPixelColors.length - 1;
+
+    display.setFloorColors(controller.targetPixelColors);
     
     controller.spraying = false;
     controller.sprayPosition = -1;
@@ -240,13 +259,13 @@ function keyPressed() {
         }
     }
 
-    if(key == 'A' || key == 'a') {
-        if(playerOne.currentColorIndex > 0) {
-            playerOne.currentColorIndex -= 1;
-        } else {
-            playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
-        }
-    }
+    // if(key == 'A' || key == 'a') {
+    //     if(playerOne.currentColorIndex > 0) {
+    //         playerOne.currentColorIndex -= 1;
+    //     } else {
+    //         playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
+    //     }
+    // }
 
     if(key == 'R' || key == 'r') {
         // temp
@@ -255,3 +274,12 @@ function keyPressed() {
         
     }
 }
+
+// adjust spray speed, spacing between player and target
+
+// player right under the floor the target color is on? 
+// idk but i think visually separating the player and target color would help
+
+// erase button
+
+// player climbing animation, cleaner climbing animation

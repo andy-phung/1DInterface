@@ -7,7 +7,7 @@
 */ /////////////////////////////////////
 
 
-let displaySize = 26;   // how many pixels are visible in the game
+let displaySize = 28;   // how many pixels are visible in the game
 let pixelSize = 20;     // how big each 'pixel' looks on screen
 
 let playerOne;    // Adding 2 players to the game
@@ -26,9 +26,12 @@ let score;        // Where we keep track of score and winner
 
 function setup() {
 
-  createCanvas(pixelSize, (displaySize*pixelSize));    // dynamically sets canvas size
+  let canvasWidth = pixelSize*11; // needs to be an odd number
+  let canvasHeight = (displaySize*pixelSize);
 
-  display = new Display(displaySize, pixelSize, false);        //Initializing the display
+  createCanvas(canvasWidth, canvasHeight);    // dynamically sets canvas size
+
+  display = new Display(displaySize, pixelSize, canvasWidth);        //Initializing the display
 
   playerOne = new Player(displaySize);   // Initializing players
   playerTwo = new Player(displaySize);
