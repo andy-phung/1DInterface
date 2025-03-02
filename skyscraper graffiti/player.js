@@ -6,6 +6,7 @@
 class Player {
   
     constructor(_displaySize) {
+        this.color;
         this.colorCycle;
         this.currentColorIndex;
         this.position;

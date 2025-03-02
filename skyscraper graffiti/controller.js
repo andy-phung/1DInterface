@@ -14,7 +14,9 @@ class Controller {
         playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
         playerOne.currentColorIndex = 0;
 
-        this.targetPixelPosition = playerOne.position - 2;
+        playerOne.color = playerOne.colorCycle[playerOne.currentColorIndex];
+
+        this.targetPixelPosition = playerOne.position - 3;
         this.targetPixelColors = [];
         for(let i = 0; i < 8; i++) {
             this.targetPixelColors.push(this.generate_random_color())
@@ -31,6 +33,9 @@ class Controller {
 
         this.painted2 = false;
         this.paintColor2 = color(0, 0, 0);
+
+        this.painted3 = false;
+        this.paintColor3 = color(0, 0, 0);
 
         this.paintedCorrect = [];
 
@@ -144,20 +149,27 @@ class Controller {
 
                 //console.log(`${this.painted}, ${this.painted2}`);
 
+                //playerOne.color.setAlpha(255);
+
                 if(keyIsDown(83)) {
+
                     if(!this.spraying && !this.justMatched && this.sprayTimeout) {
                         this.spraying = true;
                         this.sprayPosition = playerOne.position;
+                        //playerOne.color.setAlpha(128);
                     }
                     // need a delay after so players have control over how much is sprayed
                     // + delay after successfully matched color
+
+                    
                 }
 
                 // draw player
                 display.setPixel(playerOne.position, playerOne.colorCycle[playerOne.currentColorIndex]);
+                display.setBorderedPixel(playerOne.position, color(0, 0, 0), 2);
+                
                 // draw target pixel
-                display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColors[this.targetPixelIndex]);
-                display.setBorderedPixel(this.targetPixelPosition + 1, this.targetPixelColors[this.targetPixelIndex]);
+                display.setBorderedPixel(this.targetPixelPosition, this.targetPixelColors[this.targetPixelIndex], 10);
 
                 // spray animation
                 if(this.spraying) {
@@ -193,18 +205,32 @@ class Controller {
                         this.paintColor2 = this.mix([this.paintColor2, playerOne.colorCycle[playerOne.currentColorIndex]]);
                     }
 
+                    // for the target pixel closer to the player
+                    if(this.sprayPosition == this.targetPixelPosition + 2 && this.painted3 == false) {
+                        // empty
+                        this.painted3 = true;
+                        this.paintColor3 = playerOne.colorCycle[playerOne.currentColorIndex];
+                    } else if(this.sprayPosition == this.targetPixelPosition + 2 && this.painted3 == true) {
+                        // not empty
+                        this.paintColor3 = this.mix([this.paintColor3, playerOne.colorCycle[playerOne.currentColorIndex]]);
+                    }
+
 
 
                     display.setPixel(this.sprayPosition, playerOne.colorCycle[playerOne.currentColorIndex]);
                 }
 
                 if(this.painted2) {
-                    display.setPixel(this.targetPixelPosition + 1, this.paintColor2);
+                    display.setPixel(this.targetPixelPosition + 1, this.paintColor2, true);
+                }
+
+                if(this.painted3) {
+                    display.setPixel(this.targetPixelPosition + 2, this.paintColor3, true);
                 }
 
                 // color mixing on the target pixel
                 if(this.painted) {
-                    display.setPixel(this.targetPixelPosition, this.paintColor);
+                    display.setPixel(this.targetPixelPosition, this.paintColor, true);
 
                     if(this.close_enough(this.paintColor, this.targetPixelColors[this.targetPixelIndex])) {
                         display.clear();
@@ -213,6 +239,7 @@ class Controller {
 
                         this.painted = false;
                         this.painted2 = false;
+                        this.painted3 = false;
 
                         this.paintedCorrect.push([color(this.paintColor['levels'][0], this.paintColor['levels'][1], this.paintColor['levels'][2]), color(this.targetPixelColors[this.targetPixelIndex]['levels'][0], this.targetPixelColors[this.targetPixelIndex]['levels'][1], this.targetPixelColors[this.targetPixelIndex]['levels'][2])]);
 
@@ -224,8 +251,8 @@ class Controller {
 
                         this.sprayPosition = -1;
 
-                        playerOne.position -= 3;
-                        this.targetPixelPosition -= 3;
+                        playerOne.position -= 4;
+                        this.targetPixelPosition -= 4;
 
                         if(playerOne.position < 2) {
                             reset();
@@ -235,14 +262,14 @@ class Controller {
                     }
                 }
 
-                //console.log(this.paintedCorrect);
                 // displaying target pixels that they painted correctly
                 for(let i = 0; i < this.paintedCorrect.length; i++) {
                     //display.setPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][0]);
                     //display.setBorderedPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
 
-                    display.setPixel(displaySize - (3*(i+1) + 2), this.paintedCorrect[i][1]);
-                    display.setPixel(displaySize - (3*(i+1) + 2) + 1, this.paintedCorrect[i][1]);
+                    display.setPixel(displaySize - (4*(i+1) + 0), this.paintedCorrect[i][1], true);
+                    display.setPixel(displaySize - (4*(i+1) + 1), this.paintedCorrect[i][1], true);
+                    display.setPixel(displaySize - (4*(i+1) + 2), this.paintedCorrect[i][1], true);
                 }
                 
                 break;
@@ -267,7 +294,9 @@ function reset() {
     playerOne.colorCycle = [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)];
     playerOne.currentColorIndex = 0;
 
-    controller.targetPixelPosition = playerOne.position - 2;
+    playerOne.color = playerOne.colorCycle[playerOne.currentColorIndex];
+
+    controller.targetPixelPosition = playerOne.position - 3;
     controller.targetPixelColors = [];
     for(let i = 0; i < 8; i++) {
         controller.targetPixelColors.push(controller.generate_random_color())
@@ -285,6 +314,9 @@ function reset() {
     controller.painted2 = false;
     controller.paintColor2 = color(0, 0, 0);
 
+    controller.painted3 = false;
+    controller.paintColor3 = color(0, 0, 0);
+
     controller.paintedCorrect = [];
 
     controller.justMatched = false;
@@ -293,7 +325,9 @@ function reset() {
 
 
 function keyReleased() {
-
+    if(key == 's' || key == 'S') {
+        //playerOne.color.setAlpha(255);
+    }
 }
 
 function keyPressed() {
@@ -308,7 +342,7 @@ function keyPressed() {
         controller.justMatched = false;
     }
 
-    if(key == 'D' || key == 'd') {
+    if((key == 'D' || key == 'd') && !controller.spraying) {
         if(playerOne.currentColorIndex < playerOne.colorCycle.length - 1) {
             playerOne.currentColorIndex += 1;
         } else {
@@ -337,3 +371,6 @@ function keyPressed() {
 // erase button
 // player climbing animation, cleaner climbing animation
 // floor colors that continue from the last round
+// building -> clouds -> dark sky -> space in bg as u keep climbing
+
+// block color switching when spraying
