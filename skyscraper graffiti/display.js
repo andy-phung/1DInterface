@@ -15,6 +15,7 @@ class Display {
       this.borderDisplayBuffer = [];
       this.borderThicknesses = [];
       this.offset = _canvasWidth/2 - this.pixelSize/2;
+      // this.offset = 0;
       this.filled;
       this.floorColors = [];
 
@@ -65,23 +66,24 @@ class Display {
     show() {
       // sky, wip
       fill(10, 175, 255);
-      rect(0, 0, this.pixelSize*2, this.displaySize*this.pixelSize);
-      rect(this.offset + this.pixelSize*4, 0, this.pixelSize*2, this.displaySize*this.pixelSize);
+      rect(0, 0, this.pixelSize*51, this.displaySize*this.pixelSize);
 
       // building, wip
       fill(0, 0, 0);
       for (let i = 0; i < 10; i++) {
         rect(this.offset - this.pixelSize*3, this.pixelSize + this.pixelSize*4*i, this.pixelSize*7, this.pixelSize)
       }
-
+      rect(this.offset - this.pixelSize*3, 0, this.pixelSize, this.pixelSize*this.displaySize);
+      rect(this.offset + this.pixelSize*3, 0, this.pixelSize, this.pixelSize*this.displaySize);
       
+      this.drawClouds();
 
       // building floor colors, wip
-      // for(let i = 0; i < this.floorColors.length; i++) {
-      //   fill(this.floorColors[i]);
-      //   rect(this.offset - this.pixelSize*3, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
-      //   rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
-      // }
+      for(let i = 0; i < this.floorColors.length; i++) {
+        fill(255);
+        rect(this.offset - this.pixelSize*3, this.pixelSize*3*i, this.pixelSize*6, this.pixelSize*4);
+        // rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
+      }
 
       // sky pt 2
       // fill(10, 175, 255);
@@ -91,40 +93,65 @@ class Display {
       //   rect(this.offset + this.pixelSize*3, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize, this.pixelSize*2);
       // }
 
-
+      // spray painted color of each floor
       for (let i = 0; i< this.displaySize; i++) {
         //noStroke();
         if(!this.is_white(this.displayBuffer[i]) && !this.widePixels[i]) {
           fill(this.displayBuffer[i]);
-          rect(0+this.offset, i*this.pixelSize, this.pixelSize, this.pixelSize);
+          rect(this.offset, i*this.pixelSize, this.pixelSize, this.pixelSize);
         } else if(this.widePixels[i]) {
           fill(this.displayBuffer[i]);
-          rect(0 + this.pixelSize*2, i*this.pixelSize, this.pixelSize*7, this.pixelSize);
+          rect(this.offset - this.pixelSize*2, i*this.pixelSize, this.pixelSize*5, this.pixelSize);
         }
-        
       }
 
+      // borders
       for (let i =0; i< this.displaySize; i++) {
         //noStroke();
         noFill();
         stroke(this.borderDisplayBuffer[i]);
         strokeWeight(this.borderThicknesses[i]);
         if(this.borderThicknesses[i] != 2) {
+          // floor border
           rect(0+this.offset - this.pixelSize*2 + 5, i*this.pixelSize, this.pixelSize*5 - 10, this.pixelSize*3 - 5);
         } else {
+          // player border
           rect(0+this.offset + 1, i*this.pixelSize, this.pixelSize - 1, this.pixelSize - 1);
         }
-        
         noStroke();
       }
 
-      fill(0, 0, 0);
-      rect(this.pixelSize*2, 0, this.pixelSize, this.pixelSize*this.displaySize);
-      rect(this.pixelSize*8, 0, this.pixelSize, this.pixelSize*this.displaySize);
 
-      
 
     }
+
+    /**
+     * Draws pixelated clouds in the sky, using white rectangles.
+     */
+    drawClouds() {
+      fill(255); // White color for clouds
+  
+      let cloudPositions = [
+          { x: 4, y: 3 },   // Left side cloud
+          { x: 14, y: 5 },  // Left side cloud
+          { x: 36, y: 4 },  // Right side cloud
+          { x: 45, y: 6 }   // Right side cloud
+      ];
+  
+      for (let cloud of cloudPositions) {
+          let cx = cloud.x * this.pixelSize;
+          let cy = cloud.y * this.pixelSize;
+  
+          // Ensure clouds are placed outside the restricted middle range
+          if (cx < this.offset - this.pixelSize * 3 || cx > this.offset + this.pixelSize * 3) {
+              // Draw a pixelated cloud (3-row blocky structure)
+              rect(cx, cy, this.pixelSize * 3, this.pixelSize);   // Top row
+              rect(cx - this.pixelSize, cy + this.pixelSize, this.pixelSize * 5, this.pixelSize); // Middle row
+              rect(cx, cy + this.pixelSize * 2, this.pixelSize * 3, this.pixelSize);  // Bottom row
+          }
+      }
+    }
+  
 
 
     
