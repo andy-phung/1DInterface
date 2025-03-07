@@ -18,7 +18,7 @@ class Controller {
 
         this.targetPixelPosition = playerOne.position - 3;
         this.targetPixelColors = [];
-        for(let i = 0; i < 8; i++) {
+        for(let i = 0; i < 7; i++) {
             this.targetPixelColors.push(this.generate_random_color())
         }
         this.targetPixelIndex = this.targetPixelColors.length - 1;
@@ -41,6 +41,8 @@ class Controller {
 
         this.justMatched = false;
         this.sprayTimeout = true;
+
+        this.prevTopFloor = color(0, 0, 0);
 
     }
 
@@ -229,7 +231,7 @@ class Controller {
                 }
 
                 // color mixing on the target pixel
-                if(this.painted) {
+                if(this.painted && this.painted2 && this.painted3) {
                     display.setPixel(this.targetPixelPosition, this.paintColor, true);
 
                     if(this.close_enough(this.paintColor, this.targetPixelColors[this.targetPixelIndex])) {
@@ -255,6 +257,8 @@ class Controller {
                         this.targetPixelPosition -= 4;
 
                         if(playerOne.position < 2) {
+                            this.round += 1;
+                            this.prevTopFloor = this.targetPixelColors[0];
                             reset();
                         }
                         
@@ -270,6 +274,13 @@ class Controller {
                     display.setPixel(displaySize - (4*(i+1) + 0), this.paintedCorrect[i][1], true);
                     display.setPixel(displaySize - (4*(i+1) + 1), this.paintedCorrect[i][1], true);
                     display.setPixel(displaySize - (4*(i+1) + 2), this.paintedCorrect[i][1], true);
+                }
+
+                // displaying target pixel from top of prev level
+                if(this.round > 1) {
+                    display.setPixel(displaySize - 0, this.prevTopFloor, true);
+                    display.setPixel(displaySize - 1, this.prevTopFloor, true);
+                    display.setPixel(displaySize - 2, this.prevTopFloor, true);
                 }
                 
                 break;

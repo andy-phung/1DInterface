@@ -79,9 +79,9 @@ class Display {
       this.drawClouds();
 
       // building floor colors, wip
-      for(let i = 0; i < this.floorColors.length; i++) {
+      for(let i = 0; i < this.floorColors.length + 1; i++) {
         fill(255);
-        rect(this.offset - this.pixelSize*3, this.pixelSize*3*i, this.pixelSize*6, this.pixelSize*4);
+        rect(this.offset - this.pixelSize*2, this.pixelSize*4*i - this.pixelSize*2, this.pixelSize*5, this.pixelSize*3);
         // rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
       }
 
