@@ -14,10 +14,19 @@ class Display {
       this.widePixels = [];
       this.borderDisplayBuffer = [];
       this.borderThicknesses = [];
+      this.canvasWidth = _canvasWidth;
       this.offset = _canvasWidth/2 - this.pixelSize/2;
       // this.offset = 0;
       this.filled;
       this.floorColors = [];
+      this.backgrounds = ["city", "city-sky", "sky", "sky-space", "space"];
+      this.bg = this.backgrounds[0];
+
+      this.chaser_position = this.pixelSize*this.displaySize;
+
+      this.police_color = "blue";
+      this.frames_per_police_color_change = 10;
+      this.frame_counter = 0;
 
       // Assign black to all pixels. Black = off
       for(let i = 0; i < this.displaySize; i++){
@@ -55,6 +64,10 @@ class Display {
       this.floorColors = _floorColors;
     }
 
+    setBackground(_round) {
+      this.bg = this.backgrounds[_round];
+    }
+
     is_black(color) {
       return color['levels'][0] == 0 && color['levels'][1] == 0 && color['levels'][2] == 0;
     }
@@ -63,10 +76,20 @@ class Display {
       return color['levels'][0] == 255 && color['levels'][1] == 255 && color['levels'][2] == 255;
     }
 
+    resetChaser() {
+      this.chaser_position = this.pixelSize*this.displaySize;
+    }
+
+    incrementChaser() {
+      this.chaser_position -= this.pixelSize;
+    }
+
     show() {
       // sky, wip
-      fill(10, 175, 255);
-      rect(0, 0, this.pixelSize*51, this.displaySize*this.pixelSize);
+      
+
+      //fill(10, 175, 255);
+      //rect(0, 0, this.pixelSize*51, this.displaySize*this.pixelSize);
 
       // building, wip
       fill(0, 0, 0);
@@ -76,6 +99,7 @@ class Display {
       rect(this.offset - this.pixelSize*3, 0, this.pixelSize, this.pixelSize*this.displaySize);
       rect(this.offset + this.pixelSize*3, 0, this.pixelSize, this.pixelSize*this.displaySize);
       
+      // set bg here
       this.drawClouds();
 
       // building floor colors, wip
@@ -120,6 +144,36 @@ class Display {
         }
         noStroke();
       }
+
+
+      
+      
+
+      // chaser, grayscale vs color ver
+      //fill(25, 25, 25, 225);
+      //rect(0, this.chaser_position, this.canvasWidth, (this.displaySize*this.pixelSize - this.chaser_position));
+      //rect(this.offset - this.pixelSize*3, this.chaser_position, this.pixelSize*7, (this.displaySize*this.pixelSize - this.chaser_position));
+
+      this.frame_counter += 1;
+
+      if(this.frame_counter >= this.frames_per_police_color_change) {
+        if(this.police_color == "blue") {
+          this.police_color = "red";
+        } else {
+          this.police_color = "blue"
+        }
+        this.frame_counter = 0;
+      }
+
+      if(this.police_color == "blue") {
+        fill(105, 223, 250);
+      } else {
+        fill(250, 105, 105);
+      }
+      strokeWeight(1);
+      stroke('black');
+      rect(this.offset, this.chaser_position, this.pixelSize, this.pixelSize);
+
 
 
 

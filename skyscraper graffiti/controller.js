@@ -6,6 +6,9 @@ class Controller {
 
     // This is the state we start with.
     constructor() {
+
+        //this.sound = _sound;
+
         this.gameState = "PLAY";
         this.round = 1;
 
@@ -16,11 +19,30 @@ class Controller {
 
         playerOne.color = playerOne.colorCycle[playerOne.currentColorIndex];
 
-        this.targetPixelPosition = playerOne.position - 3;
-        this.targetPixelColors = [];
-        for(let i = 0; i < 7; i++) {
-            this.targetPixelColors.push(this.generate_random_color())
+        this.available_floor_colors = { // picking one from each sublist?
+            1: [[color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)], [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)], [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)]], // primary
+            2: [[color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)], [color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)], [color(255,170,85), color(85,255,170), color(170,255,85)]], // primary, secondary
+            3: [[color(0, 255, 255), color(255, 0, 255), color(255, 255, 0)], [color(255,170,85), color(85,255,170), color(170,255,85)], [color(255,170,85), color(85,255,170), color(170,255,85)]], // primary, secondary
+            4: [[color(255,170,85), color(85,255,170), color(170,255,85)], [color(255,170,85), color(85,255,170), color(170,255,85)], [color(255,170,85), color(85,255,170), color(170,255,85)]], // secondary
+            5: [[color(255,170,85), color(85,255,170), color(170,255,85)], [color(255,170,85), color(85,255,170), color(170,255,85)], [color(255,170,85), color(85,255,170), color(170,255,85)]], // secondary
         }
+
+        this.floor_patterns = [
+            [1, 1, 2, 0, 2, 1, 1],
+            [2, 1, 2, 0, 1, 0, 2],
+            [0, 1, 2, 0, 1, 2, 0],
+            [0, 1, 2, 1, 0, 1, 2]
+        ];
+
+        this.targetPixelPosition = playerOne.position - 3;
+        if (this.round <= 5) {
+            this.targetPixelColors = this.fill_pattern(this.floor_patterns[int(random(0, Object.keys(this.floor_patterns).length))], this.available_floor_colors[this.round]);
+        } else {
+            this.targetPixelColors = this.fill_pattern(this.floor_patterns[int(random(0, Object.keys(this.floor_patterns).length))], this.available_floor_colors[5]);
+        }
+
+        //console.log(this.targetPixelColors);
+        
         this.targetPixelIndex = this.targetPixelColors.length - 1;
 
         display.setFloorColors(this.targetPixelColors);
@@ -42,9 +64,43 @@ class Controller {
         this.justMatched = false;
         this.sprayTimeout = true;
 
-        this.prevTopFloor = color(0, 0, 0);
+        this.prevTopFloor = color(255, 255, 255);
+
+        this.frame_counter = 0;
+
+        this.frames_per_chaser_move = {
+            1: 20,
+            2: 20,
+            3: 15,
+            4: 15,
+            5: 10
+        }
+
+        
 
     }
+
+    fill_pattern(pattern, available_colors) {
+
+        let filled = [...pattern];
+        let random_color;
+        for(let i = 0; i < 3; i++) {
+            random_color = available_colors[i][int(random(0, 3))];
+            while(filled.find(e => typeof e === 'object' && e['levels'][0] == random_color['levels'][0] && e['levels'][1] == random_color['levels'][1] && e['levels'][2] == random_color['levels'][2]) !== undefined) {
+                random_color = available_colors[i][int(random(0, 3))];
+            }
+            //console.log(random_color);
+            for (let j = 0; j < filled.length; j++) {
+                if(filled[j] == i) {
+                    filled[j] = random_color;
+                }
+            }
+        }
+
+        console.log(`filled ${filled}`);
+        return filled;
+    }
+    
 
     // generates only bright colors
     generate_random_color() {
@@ -148,6 +204,33 @@ class Controller {
 
             case "PLAY": 
                 display.clear();
+
+                if(playerOne.position != displaySize - 3) { // if not at bottom floor, start moving chaser
+                    if(this.round <= 5) {
+                        if (this.frame_counter < this.frames_per_chaser_move[this.round]) {
+                            this.frame_counter += 1;
+                        } else {
+                            this.frame_counter = 0;
+                            display.incrementChaser();
+                        }
+                    } else {
+                        if (this.frame_counter < this.frames_per_chaser_move[this.round] - 2*(this.round - 5)) { // decrease frames needed by two for every round after 5
+                            this.frame_counter += 1;
+                        } else {
+                            this.frame_counter = 0;
+                            display.incrementChaser();
+                        }
+                    }
+                    
+
+
+                }
+
+                if(display.chaser_position <= playerOne.position * 20) {
+                    this.gameState = "LOSE";
+                }
+                
+                
 
                 //console.log(`${this.painted}, ${this.painted2}`);
 
@@ -259,6 +342,7 @@ class Controller {
                         if(playerOne.position < 2) {
                             this.round += 1;
                             this.prevTopFloor = this.targetPixelColors[0];
+                            this.sprayTimeout = false;
                             reset();
                         }
                         
@@ -277,18 +361,17 @@ class Controller {
                 }
 
                 // displaying target pixel from top of prev level
-                if(this.round > 1) {
-                    display.setPixel(displaySize - 0, this.prevTopFloor, true);
-                    display.setPixel(displaySize - 1, this.prevTopFloor, true);
-                    display.setPixel(displaySize - 2, this.prevTopFloor, true);
-                }
+                display.setPixel(displaySize - 0, this.prevTopFloor, true);
+                display.setPixel(displaySize - 1, this.prevTopFloor, true);
+                display.setPixel(displaySize - 2, this.prevTopFloor, true);
                 
                 break;
  
-            case "SUCCESS":       
+            case "WIN":       
                 break;
 
-            case "FAIL":
+            case "LOSE":
+                display.clear();
                 break;
 
             // Not used, it's here just for code compliance
@@ -309,9 +392,12 @@ function reset() {
 
     controller.targetPixelPosition = playerOne.position - 3;
     controller.targetPixelColors = [];
-    for(let i = 0; i < 8; i++) {
-        controller.targetPixelColors.push(controller.generate_random_color())
+    if (controller.round <= 5) {
+        controller.targetPixelColors = controller.fill_pattern(controller.floor_patterns[int(random(0, Object.keys(controller.floor_patterns).length))], controller.available_floor_colors[controller.round]);
+    } else {
+        controller.targetPixelColors = controller.fill_pattern(controller.floor_patterns[int(random(0, Object.keys(controller.floor_patterns).length))], controller.available_floor_colors[5]);
     }
+
     controller.targetPixelIndex = controller.targetPixelColors.length - 1;
 
     display.setFloorColors(controller.targetPixelColors);
@@ -332,6 +418,11 @@ function reset() {
 
     controller.justMatched = false;
     controller.sprayTimeout = true;
+
+    controller.frame_counter = 0;
+    display.resetChaser();
+
+    controller.gameState = "PLAY";
 }
 
 
@@ -351,6 +442,7 @@ function keyPressed() {
 
     if(key == 'S' || key == 's') {
         controller.justMatched = false;
+        //controller.sound.play();
     }
 
     if((key == 'D' || key == 'd') && !controller.spraying) {
@@ -372,6 +464,7 @@ function keyPressed() {
     if(key == 'R' || key == 'r') {
         // temp
         controller.round = 1;
+        controller.prevTopFloor = color(255, 255, 255);
         reset();
         
     }
