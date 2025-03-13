@@ -29,9 +29,13 @@ let bg4;
 let bg5;
 
 
+let spray_sound;
+let siren_sound;
+
 
 function preload() {
-  //let sound = loadSound("spray_sfx.mp3");
+  spray_sound = loadSound("spray_sfx_2.mp3");
+  siren_sound = loadSound("police_siren.mp3");
   bg1 = loadImage("bg1.png");
   bg2 = loadImage("bg2.png");
   bg3 = loadImage("bg3.png");
@@ -52,8 +56,9 @@ function setup() {
   playerOne = new Player(displaySize);   // Initializing players
   playerTwo = new Player(displaySize);
 
-  //controller = new Controller(sound);            // Initializing controller
-  controller = new Controller();      
+  sounds = [spray_sound, siren_sound];
+
+  controller = new Controller(sounds);            // Initializing controller
 
   frameRate(15);
 

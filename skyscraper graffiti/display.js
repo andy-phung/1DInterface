@@ -27,6 +27,7 @@ class Display {
       this.police_color = "blue";
       this.frames_per_police_color_change = 10;
       this.frame_counter = 0;
+      this.lost = false;
 
       // Assign black to all pixels. Black = off
       for(let i = 0; i < this.displaySize; i++){
@@ -59,6 +60,7 @@ class Display {
         display.setPixel(i, _color); 
       }
     }
+
 
     setFloorColors(_floorColors) {
       this.floorColors = _floorColors;
@@ -102,12 +104,15 @@ class Display {
       // set bg here
       this.drawClouds();
 
+
       // building floor colors, wip
       for(let i = 0; i < this.floorColors.length + 1; i++) {
         fill(255);
         rect(this.offset - this.pixelSize*2, this.pixelSize*4*i - this.pixelSize*2, this.pixelSize*5, this.pixelSize*3);
         // rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
       }
+
+      
 
       // sky pt 2
       // fill(10, 175, 255);
@@ -173,6 +178,21 @@ class Display {
       strokeWeight(1);
       stroke('black');
       rect(this.offset, this.chaser_position, this.pixelSize, this.pixelSize);
+
+
+      if(this.lost) {
+        // building floor colors, wip
+        for(let i = 0; i < 9; i++) {
+          if(this.police_color == "blue") {
+            fill(105, 223, 250);
+          } else {
+            fill(250, 105, 105);
+          }
+          rect(this.offset - this.pixelSize*2, this.pixelSize*4*i - this.pixelSize*2, this.pixelSize*5, this.pixelSize*3);
+          // rect(this.offset + this.pixelSize, this.pixelSize*2 + this.pixelSize*3*i, this.pixelSize*3, this.pixelSize*2);
+        }
+        //rect(this.offset - this.pixelSize*2, this.pixelSize*4*i - this.pixelSize*2, this.pixelSize*5, this.pixelSize*3);
+      }
 
 
 
