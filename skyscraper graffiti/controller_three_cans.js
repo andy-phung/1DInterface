@@ -243,7 +243,7 @@ class Controller {
 
                 //playerOne.color.setAlpha(255);
 
-                if(keyIsDown(83)) {
+                if(keyIsDown(83) || keyIsDown(71) || keyIsDown(75)) {
 
                     if(!this.spraying && !this.justMatched && this.sprayTimeout) {
                         this.spraying = true;
@@ -389,7 +389,7 @@ class Controller {
                 display.lost = true;
                 console.log("???");
 
-                if(keyIsDown(83)) {
+                if(keyIsDown(83) && keyIsDown(71) && keyIsDown(75)) {
                     this.round = 1;
                     this.prevTopFloor = color(255, 255, 255);
                     reset();
@@ -464,20 +464,34 @@ function keyPressed() {
     //     }
     // }
 
-    if(key == 'S' || key == 's') {
+    if(key == 'S' || key == 's' || key == 'G' || key == 'g' || key == 'K' || key == 'k') {
         controller.justMatched = false;
         controller.sounds[0].play();
     }
 
 
 
-    if(key == 'D' || key == 'd') {
-        if(playerOne.currentColorIndex > 0) {
-            playerOne.currentColorIndex -= 1;
-        } else {
-            playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
-        }
+    // if(key == 'D' || key == 'd') {
+    //     if(playerOne.currentColorIndex > 0) {
+    //         playerOne.currentColorIndex -= 1;
+    //     } else {
+    //         playerOne.currentColorIndex = playerOne.colorCycle.length - 1;
+    //     }
+    // }
+
+    if(key == 'D' || key == 'd') { // blue can
+        playerOne.currentColorIndex = 0;
     }
+
+    if(key == 'H' || key == 'h') { // blue can
+        playerOne.currentColorIndex = 0;
+    }
+
+    if(key == 'L' || key == 'l') { // blue can
+        playerOne.currentColorIndex = 0;
+    }
+
+
 
     if(key == 'R' || key == 'r') {
         // temp
