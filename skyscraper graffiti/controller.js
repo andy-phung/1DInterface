@@ -69,11 +69,11 @@ class Controller {
         this.frame_counter = 0;
 
         this.frames_per_chaser_move = {
-            1: 20,
-            2: 20,
-            3: 15,
-            4: 15,
-            5: 10
+            1: 15,
+            2: 15,
+            3: 10,
+            4: 10,
+            5: 5
         }
 
         
@@ -205,7 +205,7 @@ class Controller {
             case "PLAY": 
                 display.clear();
 
-                if(playerOne.position != displaySize - 3) { // if not at bottom floor, start moving chaser
+                if(playerOne.position <= displaySize - 12) { // if at middle floor
                     if(this.round <= 5) {
                         if (this.frame_counter < this.frames_per_chaser_move[this.round]) {
                             this.frame_counter += 1;
@@ -236,7 +236,7 @@ class Controller {
 
                 //playerOne.color.setAlpha(255);
 
-                if(keyIsDown(83)) {
+                if(keyIsDown(83) || keyIsDown(71) || keyIsDown(75)) {
 
                     if(!this.spraying && !this.justMatched && this.sprayTimeout) {
                         this.spraying = true;
@@ -440,17 +440,22 @@ function keyPressed() {
     //     }
     // }
 
-    if(key == 'S' || key == 's') {
+    if(key == 'S' || key == 's' || key == 'G' || key == 'g' || key == 'K' || key == "k") {
         controller.justMatched = false;
         //controller.sound.play();
     }
 
+
     if((key == 'D' || key == 'd') && !controller.spraying) {
-        if(playerOne.currentColorIndex < playerOne.colorCycle.length - 1) {
-            playerOne.currentColorIndex += 1;
-        } else {
-            playerOne.currentColorIndex = 0;
-        }
+        playerOne.currentColorIndex = 0;
+    }
+
+    if((key == 'H' || key == 'h') && !controller.spraying) {
+        playerOne.currentColorIndex = 1;
+    }
+
+    if((key == 'L' || key == 'l') && !controller.spraying) {
+        playerOne.currentColorIndex = 2;
     }
 
     // if(key == 'A' || key == 'a') {
