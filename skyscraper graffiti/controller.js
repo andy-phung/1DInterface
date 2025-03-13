@@ -5,9 +5,9 @@
 class Controller {
 
     // This is the state we start with.
-    constructor() {
+    constructor(_sounds) {
 
-        //this.sound = _sound;
+        this.sounds = _sounds;
 
         this.gameState = "PLAY";
         this.round = 1;
@@ -69,10 +69,10 @@ class Controller {
         this.frame_counter = 0;
 
         this.frames_per_chaser_move = {
-            1: 15,
-            2: 15,
+            1: 10,
+            2: 10,
             3: 10,
-            4: 10,
+            4: 5,
             5: 5
         }
 
@@ -204,6 +204,13 @@ class Controller {
 
             case "PLAY": 
                 display.clear();
+
+                if(display.chaser_position != display.pixelSize*display.displaySize) {
+                    if(!this.sounds[1].isPlaying()) {
+                        //this.sounds[1].volume(((displaySize - playerOne.position) * display.pixelSize));
+                        this.sounds[1].play();
+                    }
+                }
 
                 if(playerOne.position <= displaySize - 12) { // if at middle floor
                     if(this.round <= 5) {
@@ -370,8 +377,24 @@ class Controller {
             case "WIN":       
                 break;
 
-            case "LOSE":
+            case "LOSE":       
+                if(display.chaser_position != display.pixelSize*display.displaySize) {
+                    if(!this.sounds[1].isPlaying()) {
+                        this.sounds[1].play();
+                    }
+                }
+
                 display.clear();
+                //display.setAllPixels(color(255, 0, 0));
+                display.lost = true;
+                console.log("???");
+
+                if(keyIsDown(83) && keyIsDown(71) && keyIsDown(75)) {
+                    this.round = 1;
+                    this.prevTopFloor = color(255, 255, 255);
+                    reset();
+                }
+
                 break;
 
             // Not used, it's here just for code compliance
@@ -421,6 +444,7 @@ function reset() {
 
     controller.frame_counter = 0;
     display.resetChaser();
+    display.lost = false;
 
     controller.gameState = "PLAY";
 }
@@ -442,7 +466,7 @@ function keyPressed() {
 
     if(key == 'S' || key == 's' || key == 'G' || key == 'g' || key == 'K' || key == "k") {
         controller.justMatched = false;
-        //controller.sound.play();
+        controller.sounds[0].play();
     }
 
 
